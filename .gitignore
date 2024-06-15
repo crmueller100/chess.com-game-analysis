@@ -1,0 +1,3 @@
+# used virtual environment to create the requirements.txt
+/env
+.DS_Store
