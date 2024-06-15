@@ -46,9 +46,3 @@ def save_player_game_archives(player, game_archives):
 
 get_player_game_archives(player)
 
-
-
-# years, months = divmod(len(game_archives['archives']),12)
-# print(f"Player {player} has been on Chess.com for {years} years and {months} months")
-
-
