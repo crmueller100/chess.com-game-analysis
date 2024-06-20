@@ -47,6 +47,3 @@ def save_player_game_archives(player, game_archives):
 
 
 get_player_game_archives(player)
-
-with open("test22.txt", "w") as file:
-    file.write("Your text goes here")
