@@ -3,3 +3,5 @@
 .DS_Store
 game_archives/*
 analysis.ipynb
+mongo_data/*
+!.gitkeep
