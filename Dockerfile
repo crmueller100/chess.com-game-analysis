@@ -1,4 +1,3 @@
-# Use an official Python runtime as the base image
 FROM python:3.9
 
 # Set the working directory in the container
@@ -14,6 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Set the command to run when the container starts
-ENTRYPOINT [ "bash" ]  
+# ENTRYPOINT [ "bash" ]  
 
-# CMD [ "python"]
+# CMD [ "python", "src/get_player_data.py"]
+CMD ["python", "main.py"]
