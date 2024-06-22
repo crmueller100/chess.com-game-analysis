@@ -11,7 +11,9 @@ url = "https://api.chess.com/pub/player/hikaru/games/2014/01"
 headers = {
     "User-Agent": "curl/8.4.0"
     }
-    
+
+MONGO_HOST = os.getenv('MONGO_HOST')
+
 def get_player_game_archives(player):
     url = f"https://api.chess.com/pub/player/{player}/games/archives"
     response = requests.get(url, headers=headers)
@@ -45,4 +47,3 @@ def save_player_game_archives(player, game_archives):
 
 
 get_player_game_archives(player)
-
