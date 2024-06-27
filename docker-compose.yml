@@ -3,14 +3,16 @@ version: '3'
 services:
   mongo:
     image: mongo:latest
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: example
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
     volumes:
       - ./mongo_data/:/data/db
     container_name: my-mongodb
+    networks: 
+      - my-network
 
   app:
     build: .
@@ -21,3 +23,9 @@ services:
       - MONGO_PORT=27017      
     volumes:
       - .:/app # allows you to edit the code without rebuilding the image
+    networks:  
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
