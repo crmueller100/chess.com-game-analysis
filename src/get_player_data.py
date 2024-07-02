@@ -8,12 +8,28 @@ headers = {
     "User-Agent": "curl/8.4.0"
     }
 
+'''
+url = f'https://api.chess.com/pub/player/{player}/'
+stats_url = f'https://api.chess.com/pub/player/{player}/stats'
+url = f"https://api.chess.com/pub/player/{player}/games/2014/01"
+'''
+
 def get_player_game_archives(player):
     url = f"https://api.chess.com/pub/player/{player}/games/archives"
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         game_archives = response.json()
+        '''
+        The response is an array of the following format:
+        [
+        https://api.chess.com/pub/player/hikaru/games/2014/01,
+        https://api.chess.com/pub/player/hikaru/games/2014/02,
+        ... 
+        'https://api.chess.com/pub/player/hikaru/games/2024/06',
+        'https://api.chess.com/pub/player/hikaru/games/2024/07',
+        ]
+        '''
     else:
         print("Error:", response)
     
@@ -39,18 +55,3 @@ def save_player_game_archives(player, game_archives):
                     print(f"Saved {year}_{month}.json for {player}")
             else:
                 print("Error:", response)
-    
-
-# # print(db.list_collection_names())
-# # print(collection.totalSize())
-
-# # Insert a document into the collection
-# game1 = {"url": "https://www.chess.com/game/live/692667823"}
-# collection.insert_one(game1)
-# # collection.insert_one(game1)
-# # print(collection.find())
-# # for x in collection.find():
-#     # print(x)
-
-# if __name__ == "__main__":
-#     print("Connected to MongoDB")
