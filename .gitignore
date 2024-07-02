@@ -5,3 +5,4 @@ game_archives/*
 analysis.ipynb
 mongo_data/*
 !.gitkeep
+__pycache__/

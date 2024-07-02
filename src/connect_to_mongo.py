@@ -1,22 +1,35 @@
 import os
 import pymongo
 
-# Define MongoDB connection parameters
-username = "root"
-password = "example"
-host = os.getenv("MONGO_HOST")
-port = os.getenv("MONGO_PORT")
+from pymongo.errors import ConnectionFailure, OperationFailure, ConfigurationError
 
-# Create the connection string with authSource
-connection_string = f"mongodb://{username}:{password}@{host}:{port}"
+def connect_to_mongo():
+    print(f"Connecting to MongoDB")
+    try:
+        # Define MongoDB connection parameters
+        username = "root"
+        password = "example"
+        host = os.getenv("MONGO_HOST")
+        port = os.getenv("MONGO_PORT")
 
-# Establish connection to MongoDB
-client = pymongo.MongoClient(connection_string)
-db = client["chess_data"]
-collection = db["games"]
+        connection_string = f"mongodb://{username}:{password}@{host}:{port}"
 
-# Insert a document into the collection
-game1 = {"url": "https://www.chess.com/game/live/692667823"}
-collection.insert_one(game1)
+        # Establish connection to MongoDB
+        client = pymongo.MongoClient(connection_string)
+        db = client["chess_data"]
+        collection = db["games"]
 
-print(client.list_database_names())
+        return client, db, collection 
+
+    except ConnectionFailure as e:
+        print(f"Could not connect to MongoDB: {e}")
+        return None, None, None
+
+    except OperationFailure as e:
+        print(f"MongoDB operation failed: {e}")
+        return None, None, None
+    
+    except ConfigurationError as e:
+        print(f"MongoDB configuration error: {e}")
+        return None, None, None
+
