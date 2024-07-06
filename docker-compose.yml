@@ -15,15 +15,35 @@ services:
       - my-network
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: app/Dockerfile
     depends_on:
       - mongo
     environment:
-      - MONGO_HOST=my-mongodb  # Use the container name as the hostname
+      - MONGO_HOST=my-mongodb
       - MONGO_PORT=27017      
     volumes:
-      - .:/app # allows you to edit the code without rebuilding the image
+      - ./app:/app
+      - ./dashboard:/dashboard
     networks:  
+      - my-network
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    ports:
+      - 8501:8501
+    volumes:
+      - ./app:/app
+      - ./dashboard:/dashboard
+    depends_on:
+      - app
+    environment:
+      - MONGO_HOST=my-mongodb
+      - MONGO_PORT=27017
+    networks: 
       - my-network
 
 networks:

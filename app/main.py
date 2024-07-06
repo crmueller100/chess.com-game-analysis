@@ -15,10 +15,11 @@ def main():
 
     insert_games_into_mongo(client, db, collection, player)
 
+    # analyze_player_data(db, collection, player)
     # TODO: Delete! This is only a test
-    all_games = collection.find()
-    for game in all_games:
-        print(game)
+    # all_games = collection.find()
+    # for game in all_games:
+        # print(game)
 
 if __name__ == "__main__":
     main()

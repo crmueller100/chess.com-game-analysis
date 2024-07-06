@@ -6,5 +6,4 @@ six==1.16.0
 tzdata==2024.1
 pymongo==4.7.3
 requests==2.32.3
-streamlit==1.36.0
 Flask==3.0.3 # eventually delete this line
