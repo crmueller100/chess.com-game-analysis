@@ -1,7 +1,7 @@
 # used virtual environment to create the requirements.txt
 /env
 .DS_Store
-game_archives/*
+game_archives/
 analysis.ipynb
 mongo_data/*
 !.gitkeep

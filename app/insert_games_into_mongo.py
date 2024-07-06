@@ -17,7 +17,7 @@ def insert_games_into_mongo(client, db, collection, player):
                 for game in games:
                     try:
                         # The URL will be the default unique identifier (_id). Could use the UUID with collection.insert_one({"_id": game["uuid"], **game}) 
-                        collection.insert_one(game)
+                        collection.insert_one({"_id": game["uuid"], **game}) 
 
                     except DuplicateKeyError:
                         print(f"Duplicate game found (skipping): {game.get('url')}")  
