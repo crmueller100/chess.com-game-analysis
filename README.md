@@ -29,4 +29,3 @@ docker exec -it <python container_id> bash
 
 Then you can simply run `python src/<somefile>.py`
 
-Next TODOs: move `app/game_archives/` to `data/game_archives/`. Make a sibling of `data/dashboard_data/`
