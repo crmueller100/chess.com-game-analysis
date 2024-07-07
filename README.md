@@ -14,7 +14,7 @@ docker run -it chess-analysis
 ```
 
 ### Usage
-The players' data will be saved to the `game_archives/` directory using the directory name `game_archives/<player_username>/<year>_<month>`.
+The players' data will be saved to the `data/` directory using the directory name `data/game_archives/<player_username>/<year>_<month>`.
 
 Build the docker images and start the mongo and app services. Need to run `--build` when you add a new line to the `requirements.txt` file:
 ```
