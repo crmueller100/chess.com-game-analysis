@@ -27,6 +27,7 @@ services:
     volumes:
       - ./app:/app
       - ./dashboard:/dashboard
+      - ./data:/data
     networks:
       - my-network
 
@@ -45,6 +46,7 @@ services:
     volumes:
       - ./app:/app
       - ./dashboard:/dashboard
+      - ./data:/data
     networks:
       - my-network
 

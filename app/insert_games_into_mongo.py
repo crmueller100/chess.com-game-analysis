@@ -6,7 +6,7 @@ from pymongo.errors import DuplicateKeyError
 
 
 def insert_games_into_mongo(client, db, collection, player):
-    rootdir = f"./game_archives/{player}"
+    rootdir = f"../data/game_archives/{player}"
 
     for monthly_games in os.listdir(rootdir):
         try:

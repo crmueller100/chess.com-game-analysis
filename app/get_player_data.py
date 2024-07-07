@@ -39,18 +39,18 @@ def get_player_game_archives(player):
     return game_archives
 
 def save_player_game_archives(player, game_archives):
-    os.makedirs(f"game_archives/{player}", exist_ok=True)
+    os.makedirs(f"../data/game_archives/{player}", exist_ok=True)
     # TODO: remove the [:3] to get all the games
     for game in game_archives['archives'][:3]:
         year = game.split('/')[-2]
         month = game.split('/')[-1]
         # If the file doesn't exist, create it. If it's in the past, we know the data won't change. If it's the current month, we want to update it.
-        if not os.path.exists(f"game_archives/{player}/{year}_{month}.json") or (int(year) == datetime.today().year and int(month) == datetime.today().month):
+        if not os.path.exists(f"../data/game_archives/{player}/{year}_{month}.json") or (int(year) == datetime.today().year and int(month) == datetime.today().month):
             url = f"https://api.chess.com/pub/player/{player}/games/{year}/{month}"
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 games = response.json()
-                with open(f"game_archives/{player}/{year}_{month}.json", "w") as f:
+                with open(f"../data/game_archives/{player}/{year}_{month}.json", "w") as f:
                     f.write(json.dumps(games, indent=2))
                     print(f"Saved {year}_{month}.json for {player}")
             else:
