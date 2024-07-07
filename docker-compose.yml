@@ -11,7 +11,7 @@ services:
     volumes:
       - ./mongo_data/:/data/db
     container_name: my-mongodb
-    networks: 
+    networks:
       - my-network
 
   app:
@@ -22,11 +22,12 @@ services:
       - mongo
     environment:
       - MONGO_HOST=my-mongodb
-      - MONGO_PORT=27017      
+      - MONGO_PORT=27017
+      - PYTHONPATH=/app:/dashboard
     volumes:
       - ./app:/app
       - ./dashboard:/dashboard
-    networks:  
+    networks:
       - my-network
 
   dashboard:
@@ -35,15 +36,16 @@ services:
       dockerfile: dashboard/Dockerfile
     ports:
       - 8501:8501
-    volumes:
-      - ./app:/app
-      - ./dashboard:/dashboard
     depends_on:
       - app
     environment:
       - MONGO_HOST=my-mongodb
       - MONGO_PORT=27017
-    networks: 
+      - PYTHONPATH=/app:/dashboard
+    volumes:
+      - ./app:/app
+      - ./dashboard:/dashboard
+    networks:
       - my-network
 
 networks:
