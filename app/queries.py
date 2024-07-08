@@ -105,3 +105,62 @@ def count_time_controls(collection, player, time_class=None, color=None):
 
     result = list(collection.aggregate(pipeline))
     return result
+
+def count_detailed_time_controls(collection, player, time_class=None, color=None):
+    pipeline = [
+        {
+            "$match": {
+                "player": {"$regex": player, "$options": "i"},
+                **({"time_class": time_class} if time_class else {}),  # Filter by time_class (if provided)
+                **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {})  # Filter by color (if provided)
+            }
+        },
+        {
+            "$project": {
+                "result": {
+                    "$cond": {
+                        "if": { "$eq": ["$time_class", "daily"] },
+                        "then": "daily",
+                        "else": {
+                            "$cond": {
+                                "if": { "$eq": ["$time_class", "blitz"] },
+                                "then": {  # Filter on time_control INSIDE this branch
+                                    "$switch": {
+                                        "branches": [
+                                            { "case": { "$and": [{"$eq": ["$time_class", "blitz"]}, {"$eq": ["$time_control", "300"] }] }, "then": "5 minute blitz" },
+                                            { "case": { "$and": [{"$eq": ["$time_class", "blitz"]}, {"$eq": ["$time_control", "180"] }] }, "then": "3 minute blitz" }
+                                        ],
+                                        "default": "blitz"
+                                    }
+                                },
+                                "else": {
+                                    "$cond": {
+                                        "if": { "$eq": ["$time_class", "bullet"] },
+                                        "then": {
+                                            "$switch": {
+                                                "branches": [
+                                                    { "case": { "$and": [{"$eq": ["$time_class", "bullet"]}, {"$eq": ["$time_control", "60"] }] }, "then": "1 minute bullet" },
+                                                    { "case": { "$and": [{"$eq": ["$time_class", "bullet"]}, {"$eq": ["$time_control", "30"] }] }, "then": "30 second bullet" }
+                                                ],
+                                                "default": "bullet"
+                                            }
+                                        },
+                                        "else": "$time_class"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": "$result",
+                "count": {"$sum": 1}
+            }
+        }
+    ]
+
+    result = list(collection.aggregate(pipeline))
+    return result
