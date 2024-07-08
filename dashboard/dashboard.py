@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 import plotly.express as px
 import plotly.graph_objects as go
 
+from collections import defaultdict
+
 
 # Connect to MongoDB
 client, db, collection = connect_to_mongo()
@@ -108,14 +110,36 @@ fig = px.pie(
 col3.plotly_chart(fig)
 
 
+# Need to aggregate the labels because we casted unique labels to categories (e.g. stalemate -> draw)
+def aggregate_values(labels, values):
+    aggregated = defaultdict(int)
+    for label, value in zip(labels, values):
+        aggregated[label] += value
+    print(list(aggregated.keys()), list(aggregated.values()))
+    return list(aggregated.keys()), list(aggregated.values())
+
+labels_white, values_white = aggregate_values(labels_white, values_white)
+labels_black, values_black = aggregate_values(labels_black, values_black)
+
+total_white = sum(values_white)
+total_black = sum(values_black)
+
+percentages_white = [(value / total_white) * 100 for value in values_white]
+percentages_black = [(value / total_black) * 100 for value in values_black]
+
+
 fig = px.bar(
     x=labels_white + labels_black, 
-    y=values_white + values_black,
-    color=["White"] * len(labels_white) + ["Black"] * len(labels_black),  # Color list
+    y=percentages_white + percentages_black,
+    color=["White"] * len(labels_white) + ["Black"] * len(labels_black),
     barmode="group",
     title="Game Results by Color",
-    labels={"x": "Result", "y": "Number of Games", "color": "Player Color"}
+    labels={"x": "Result", "y": "Percentage of Games (%)", "color": "Player Color"},
+    category_orders={"x": ["win", "draw", "lose"]},
+    text=percentages_white + percentages_black
 )
+
+fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
 
 # Display chart
 st.plotly_chart(fig)
