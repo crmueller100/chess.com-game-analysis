@@ -5,24 +5,21 @@ from dateutil.relativedelta import relativedelta
 
 import plotly.express as px
 
-
-player = 'hikaru'
-
 # Connect to MongoDB
 client, db, collection = connect_to_mongo()
 
-st.title(f"Chess Stats for {player}")
-
 with st.sidebar:
     # TODO: Eventually make it a multiselect (different data structure than single select): https://docs.streamlit.io/develop/api-reference/widgets/st.multiselect
-    player_name = st.text_input("Enter player name:")
+    player = st.text_input("Enter player username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "daily"])
 
-print('\n\n\n\n')
-print(f"player_name: {player_name}")
-
+if not player:
+    st.error("Please enter a player username")
+    st.stop()
 if time_class == "All":
     time_class = None
+
+st.title(f"Chess Stats for {player}")
 
 all_games = get_all_games(collection, player, time_class)
 all_games_as_white = get_all_games_as_white(collection, player, time_class)
