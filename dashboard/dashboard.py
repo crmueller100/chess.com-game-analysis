@@ -51,7 +51,7 @@ results_as_black = get_win_loss_counts(collection, player, 'black', time_class, 
 count_time_controls = count_time_controls(collection, player, time_class, color)
 count_detailed_time_controls = count_detailed_time_controls(collection, player, time_class, color)
 
-
+rating_of_time_controls_over_time = rating_of_time_controls_over_time(collection, player, time_class, color)
 
 
 #########################################################
@@ -148,6 +148,29 @@ detailed_time_control_chart = px.pie(
     labels={'names': 'Result', 'values': 'Count'}
     )
 
+average_rating_over_time = [round(doc["avg_rating"],1) for doc in rating_of_time_controls_over_time]
+average_rating_over_time_dates = [doc["date"] for doc in rating_of_time_controls_over_time]
+average_rating_over_time_class = [doc["time_class"] for doc in rating_of_time_controls_over_time]
+average_rating_over_time_class_counts = [doc["count"] for doc in rating_of_time_controls_over_time]
+
+# Create a line chart with Plotly
+ratings_over_time_by_time_class = px.line(
+    x=average_rating_over_time_dates,
+    y=average_rating_over_time,
+    color=average_rating_over_time_class,
+    labels={'x': 'Date', 'y': 'Average Rating', 'color': 'Time Class'},
+    title='Average Rating Over Time by Time Class',
+    hover_data={'# Games': average_rating_over_time_class_counts},
+    markers=True
+)
+
+# Customize the layout
+ratings_over_time_by_time_class.update_layout(
+    xaxis_title='Date',
+    yaxis_title='Average Rating',
+    legend_title='Time Class'
+)
+
 
 # #########################################################
 # # Assemble Dashboard
@@ -162,10 +185,8 @@ col4.metric(label="Games Played This Month", value=all_games_played_this_month, 
 
 col1, col2 = st.columns([2,1])
 
-with col1:
-    st.plotly_chart(bar_chart_of_win_draw_loss_percentage)  
-with col2:
-    st.plotly_chart(summary_of_time_controls) 
+col1.plotly_chart(bar_chart_of_win_draw_loss_percentage)  
+col2.plotly_chart(summary_of_time_controls) 
 
 st.subheader("Game Details")
 
@@ -175,6 +196,7 @@ col1.plotly_chart(game_results_as_white)
 col2.plotly_chart(game_results_as_black)
 col3.plotly_chart(detailed_time_control_chart)
 
+st.plotly_chart(ratings_over_time_by_time_class)
 
 # st.subheader("TODO: Maybe add a heatmap of ways of results of wins vs results of losses?")
 # # st.metric(label="Total Games Played", value=50)

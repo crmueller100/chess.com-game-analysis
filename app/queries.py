@@ -1,6 +1,8 @@
 import pymongo
-from connect_to_mongo import connect_to_mongo
+from pprint import pprint
 from datetime import datetime
+
+from connect_to_mongo import connect_to_mongo
 
 # TODO: delete this 
 client, db, collection  = connect_to_mongo()
@@ -124,7 +126,7 @@ def count_detailed_time_controls(collection, player, time_class=None, color=None
                         "else": {
                             "$cond": {
                                 "if": { "$eq": ["$time_class", "blitz"] },
-                                "then": {  # Filter on time_control INSIDE this branch
+                                "then": {
                                     "$switch": {
                                         "branches": [
                                             { "case": { "$and": [{"$eq": ["$time_class", "blitz"]}, {"$eq": ["$time_control", "300"] }] }, "then": "5 minute blitz" },
@@ -163,4 +165,97 @@ def count_detailed_time_controls(collection, player, time_class=None, color=None
     ]
 
     result = list(collection.aggregate(pipeline))
+    return result
+
+def rating_of_time_controls_over_time(collection, player, time_class, color):
+    # Try new way of organizing the stages
+
+    stage_match_filters = {
+        "$match": {
+            # TODO: Delete this
+            # "uuid": "cfb880e6-b16a-11e3-82d6-00000001000b",
+            "player": {"$regex": player, "$options": "i"},
+            **({"time_class": time_class} if time_class else {}),  # Filter by time_class (if provided)
+            **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {})  # Filter by color (if provided)
+        }
+    }
+
+    project_day_and_time_class = {
+        "$project": {
+            "result": "$time_class",
+            "date": {
+                "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": {
+                        "$toDate": {
+                            "$multiply": ["$end_time", 1000] # Convert to milliseconds
+                        }
+                    }
+                }
+            },
+            # need to determine the player's color to determine their rating
+            "player_color": {
+                "$cond": [
+                    {"$eq": [{"$toLower": "$white.username"}, {"$toLower": player}]},
+                    "white",
+                    "black"
+                ]
+            },
+            "rating": {
+                "$cond": [
+                    # Need to re-evaluate the player color because these expressions are evaluated independently for each document
+                    {"$eq": [{
+                        "$cond": [{
+                            "$eq": [{"$toLower": "$white.username"}, {"$toLower": player}]
+                            },
+                        "white",
+                        "black"
+                        ]
+                    }, "white"]},  # Corrected to $eq
+                    "$white.rating",
+                    "$black.rating"
+                ]
+            }
+        }
+    }
+    group_by_day_and_time_class = {
+        "$group": {
+            "_id": {
+                "time_class": "$result",
+                "date": "$date"
+            },
+            "avg_rating": {"$avg": "$rating"}, #Calculate average of the specified rating
+            "count": {"$sum": 1} 
+        }
+    }
+
+    project = {
+        "$project": {
+            "_id": 0,
+            "time_class": "$_id.time_class",
+            "date": "$_id.date",
+            "avg_rating": 1,  # Include the average rating
+            "count": 1
+        }
+    }
+
+    sort = {
+        "$sort": {
+            "date": pymongo.ASCENDING
+        }
+    
+
+    }
+
+    pipeline = [
+        stage_match_filters,
+        project_day_and_time_class,
+        group_by_day_and_time_class,
+        project,
+        sort
+        
+    ]
+    pprint(pipeline)
+    result = list(collection.aggregate(pipeline))
+    pprint(result)
     return result
