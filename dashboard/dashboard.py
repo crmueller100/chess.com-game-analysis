@@ -23,12 +23,18 @@ print('\n\n\n\n')
 if not player:
     st.error("Please enter a player username")
     st.stop()
+else:
+    player = player.lower() # make it case-insensitive because the data is stored in lowercase
 
 if time_class == "All":
     time_class = None
 
 if color == "all":
     color = None
+
+if not collection.find_one({"player": player}):
+    st.error("Ain't no player by that there name. Enter a valid player username.")
+    st.stop()
 
 
 #########################################################
