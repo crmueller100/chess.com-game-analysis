@@ -15,30 +15,17 @@ def insert_games_into_mongo(client, db, collection, player):
                 games = data.get("games", [])
                 yyyy_mm = monthly_games[:-5]
                 
+                insert_count = 0
+                duplicate_count = 0
                 for game in games:
                     try:
                         # The URL will be the default unique identifier (_id). Could use the UUID with collection.insert_one({"_id": game["uuid"], **game}) 
                         collection.insert_one({"_id": game["uuid"], "player": player.lower(), "month": yyyy_mm, **game}) 
-                        print(f"Inserted yyyy_mm {yyyy_mm} for player {player}")
+                        # print(f"Inserted yyyy_mm {yyyy_mm} for player {player}")
+                        insert_count += 1
                     except DuplicateKeyError:
-                        print(f"Duplicate game found (skipping): {game.get('url')}")  
-
+                        # print(f"Duplicate game found (skipping): {game.get('url')}")  
+                        duplicate_count += 1
+                print(f"Inserted {insert_count} games and skipped {duplicate_count} duplicates for {player} in {yyyy_mm}")
         except FileNotFoundError:
             print(f"File not found: {monthly_games}")
-
-
-
-
-# # print(db.list_collection_names())
-# # print(collection.totalSize())
-
-# # Insert a document into the collection
-# game1 = {"url": "https://www.chess.com/game/live/692667823"}
-# collection.insert_one(game1)
-# # collection.insert_one(game1)
-# # print(collection.find())
-# # for x in collection.find():
-#     # print(x)
-
-# if __name__ == "__main__":
-#     print("Connected to MongoDB")
