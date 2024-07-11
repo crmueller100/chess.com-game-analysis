@@ -7,16 +7,18 @@ from connect_to_mongo import connect_to_mongo
 # TODO: delete this 
 client, db, collection  = connect_to_mongo()
 
-def get_all_games(collection, player, time_class=None, color=None):
+def get_all_games(collection, player, time_class=None, color=None, date=None):
     filter_query = { "player": player }
     if time_class:
         filter_query["time_class"] = time_class
     if color:
         filter_query[f"{color}.username"] = {"$regex": f"^{player}$", "$options": "i"}
+    if date:
+        filter_query["end_time"] = {"$gte": date}
 
     return collection.count_documents(filter_query)
 
-def get_all_games_as_white(collection, player, time_class=None, color=None):
+def get_all_games_as_white(collection, player, time_class=None, color=None, date=None):
     filter_query = {
         # makes it a case-insensitive search
         "white.username": {"$regex": f"^{player}$", "$options": "i"},
@@ -26,10 +28,12 @@ def get_all_games_as_white(collection, player, time_class=None, color=None):
         filter_query["time_class"] = time_class
     if color:
         filter_query[f"{color}.username"] = {"$regex": f"^{player}$", "$options": "i"}
+    if date:
+        filter_query["end_time"] = {"$gte": date}
 
     return collection.count_documents(filter_query)
 
-def get_all_games_as_black(collection, player, time_class=None, color=None):
+def get_all_games_as_black(collection, player, time_class=None, color=None, date=None):
     filter_query = {
         # makes it a case-insensitive search
         "black.username": {"$regex": f"^{player}$", "$options": "i"},
@@ -39,10 +43,12 @@ def get_all_games_as_black(collection, player, time_class=None, color=None):
         filter_query["time_class"] = time_class
     if color:
         filter_query[f"{color}.username"] = {"$regex": f"^{player}$", "$options": "i"}
+    if date:
+        filter_query["end_time"] = {"$gte": date}
 
     return collection.count_documents(filter_query)
 
-def get_all_games_played_in_a_month(collection, player, month, time_class=None, color=None):
+def get_all_games_played_in_a_month(collection, player, month, time_class=None, color=None, date=None):
     filter_query = {
         "player": player,
         "month": month
@@ -51,18 +57,21 @@ def get_all_games_played_in_a_month(collection, player, month, time_class=None, 
         filter_query["time_class"] = time_class
     if color:
         filter_query[f"{color}.username"] = {"$regex": f"^{player}$", "$options": "i"}
+    if date:
+        filter_query["end_time"] = {"$gte": date}
 
     return collection.count_documents(filter_query)
 
 
-def get_win_loss_counts(collection, player, color, time_class=None, color_filter=None):
+def get_win_loss_counts(collection, player, color, time_class=None, color_filter=None, date=None):
 
     pipeline = [
         {
             "$match": {
                 f"{color}.username": {"$regex": player, "$options": "i"},
                 **({"time_class": time_class} if time_class else {}),
-                **({f"{color_filter}.username": {"$regex": f"^{player}$", "$options": "i"}} if color_filter else {})
+                **({f"{color_filter}.username": {"$regex": f"^{player}$", "$options": "i"}} if color_filter else {}),
+                **({"end_time": {"$gte": date}} if date else {})
                 
             }
         },
@@ -83,13 +92,14 @@ def get_win_loss_counts(collection, player, color, time_class=None, color_filter
     result = list(collection.aggregate(pipeline))
     return result
 
-def count_time_controls(collection, player, time_class=None, color=None):
+def count_time_controls(collection, player, time_class=None, color=None, date=None):
     pipeline = [
         {
             "$match": {
                 f"player": {"$regex": player, "$options": "i"},
                 **({"time_class": time_class} if time_class else {}),
-                **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {})
+                **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {}),
+                **({"end_time": {"$gte": date}} if date else {}),
             }
         },
         {
@@ -108,13 +118,14 @@ def count_time_controls(collection, player, time_class=None, color=None):
     result = list(collection.aggregate(pipeline))
     return result
 
-def count_detailed_time_controls(collection, player, time_class=None, color=None):
+def count_detailed_time_controls(collection, player, time_class=None, color=None, date=None):
     pipeline = [
         {
             "$match": {
                 "player": {"$regex": player, "$options": "i"},
                 **({"time_class": time_class} if time_class else {}),  # Filter by time_class (if provided)
-                **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {})  # Filter by color (if provided)
+                **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {}),  # Filter by color (if provided)
+                **({"end_time": {"$gte": date}} if date else {}),
             }
         },
         {
@@ -167,16 +178,15 @@ def count_detailed_time_controls(collection, player, time_class=None, color=None
     result = list(collection.aggregate(pipeline))
     return result
 
-def rating_of_time_controls_over_time(collection, player, time_class, color):
+def rating_of_time_controls_over_time(collection, player, time_class, color, date=None):
     # Try new way of organizing the stages
 
     stage_match_filters = {
         "$match": {
-            # TODO: Delete this
-            # "uuid": "cfb880e6-b16a-11e3-82d6-00000001000b",
             "player": {"$regex": player, "$options": "i"},
             **({"time_class": time_class} if time_class else {}),  # Filter by time_class (if provided)
-            **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {})  # Filter by color (if provided)
+            **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {}),  # Filter by color (if provided)
+            **({"end_time": {"$gte": date}} if date else {}),
         }
     }
 
@@ -211,7 +221,8 @@ def rating_of_time_controls_over_time(collection, player, time_class, color):
                         "white",
                         "black"
                         ]
-                    }, "white"]},  # Corrected to $eq
+                    }, 
+                    "white"]},
                     "$white.rating",
                     "$black.rating"
                 ]
@@ -224,8 +235,8 @@ def rating_of_time_controls_over_time(collection, player, time_class, color):
                 "time_class": "$result",
                 "date": "$date"
             },
-            "avg_rating": {"$avg": "$rating"}, #Calculate average of the specified rating
-            "count": {"$sum": 1} 
+            "avg_rating": {"$avg": "$rating"}, #Calculate average of the player's rating
+            "count": {"$sum": 1}
         }
     }
 
@@ -234,7 +245,7 @@ def rating_of_time_controls_over_time(collection, player, time_class, color):
             "_id": 0,
             "time_class": "$_id.time_class",
             "date": "$_id.date",
-            "avg_rating": 1,  # Include the average rating
+            "avg_rating": 1,
             "count": 1
         }
     }
@@ -243,8 +254,6 @@ def rating_of_time_controls_over_time(collection, player, time_class, color):
         "$sort": {
             "date": pymongo.ASCENDING
         }
-    
-
     }
 
     pipeline = [
@@ -253,9 +262,7 @@ def rating_of_time_controls_over_time(collection, player, time_class, color):
         group_by_day_and_time_class,
         project,
         sort
-        
     ]
-    pprint(pipeline)
+
     result = list(collection.aggregate(pipeline))
-    pprint(result)
     return result

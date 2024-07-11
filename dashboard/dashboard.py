@@ -1,10 +1,11 @@
 import streamlit as st
 from queries import *
-import datetime
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from collections import defaultdict
 
@@ -16,8 +17,9 @@ with st.sidebar:
     player = st.text_input("Enter player username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "daily"]) # TODO: Eventually make it a multiselect (different data structure than single select): https://docs.streamlit.io/develop/api-reference/widgets/st.multiselect
     color = st.radio("Color", ["All","White", "Black"]).lower()
+    date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
 
-# player = 'hikaru' # TODO: remove. This is just for testing
+player = 'hikaru' # TODO: remove. This is just for testing
 print('\n\n\n\n')
 
 if not player:
@@ -33,31 +35,39 @@ if color == "all":
     color = None
 
 if not collection.find_one({"player": player}):
-    st.error("Ain't no player by that there name. Enter a valid player username.")
+    st.error("No user data for selected player. Enter a valid player username.")
     st.stop()
+
+if date:
+    date = datetime.combine(date, datetime.min.time()).timestamp() # cast date to datetime and convert to epoch time
+    latest_end_time_for_player = collection.find({"player": player}).sort({"end_time": -1}).limit(1)
+    latest_end_time_value = latest_end_time_for_player[0]["end_time"]
+    if date > latest_end_time_value:
+        st.error(f"No data for selected date range. Enter an earlier date. The latest date with game data for {player} is {datetime.fromtimestamp(latest_end_time_value).strftime('%Y-%m-%d')}.")
+        st.stop()
 
 
 #########################################################
 # Query Mongo and collect all the data
 #########################################################
 
-current_month = datetime.datetime.now().strftime('%Y_%m')
-last_month = (datetime.datetime.now() - relativedelta(months=1)).strftime('%Y_%m')
+current_month = datetime.now().strftime('%Y_%m')
+last_month = (datetime.now() - relativedelta(months=1)).strftime('%Y_%m')
 
-all_games = get_all_games(collection, player, time_class, color)
-all_games_as_white = get_all_games_as_white(collection, player, time_class, color)
-all_games_as_black = get_all_games_as_black(collection, player, time_class, color)
+all_games = get_all_games(collection, player, time_class, color, date)
+all_games_as_white = get_all_games_as_white(collection, player, time_class, color, date)
+all_games_as_black = get_all_games_as_black(collection, player, time_class, color, date)
 
-all_games_played_this_month = get_all_games_played_in_a_month(collection, player, current_month, time_class, color)
-all_games_played_last_month = get_all_games_played_in_a_month(collection, player, last_month, time_class, color)
+all_games_played_this_month = get_all_games_played_in_a_month(collection, player, current_month, time_class, color, date)
+all_games_played_last_month = get_all_games_played_in_a_month(collection, player, last_month, time_class, color, date)
 
-results_as_white = get_win_loss_counts(collection, player, 'white', time_class, color)
-results_as_black = get_win_loss_counts(collection, player, 'black', time_class, color)
+results_as_white = get_win_loss_counts(collection, player, 'white', time_class, color, date)
+results_as_black = get_win_loss_counts(collection, player, 'black', time_class, color, date)
 
-count_time_controls = count_time_controls(collection, player, time_class, color)
-count_detailed_time_controls = count_detailed_time_controls(collection, player, time_class, color)
+count_time_controls = count_time_controls(collection, player, time_class, color, date)
+count_detailed_time_controls = count_detailed_time_controls(collection, player, time_class, color, date)
 
-rating_of_time_controls_over_time = rating_of_time_controls_over_time(collection, player, time_class, color)
+rating_of_time_controls_over_time = rating_of_time_controls_over_time(collection, player, time_class, color, date)
 
 
 #########################################################
@@ -159,28 +169,51 @@ average_rating_over_time_dates = [doc["date"] for doc in rating_of_time_controls
 average_rating_over_time_class = [doc["time_class"] for doc in rating_of_time_controls_over_time]
 average_rating_over_time_class_counts = [doc["count"] for doc in rating_of_time_controls_over_time]
 
-# Create a line chart with Plotly
-ratings_over_time_by_time_class = px.line(
-    x=average_rating_over_time_dates,
-    y=average_rating_over_time,
-    color=average_rating_over_time_class,
-    labels={'x': 'Date', 'y': 'Average Rating', 'color': 'Time Class'},
-    title='Average Rating Over Time by Time Class',
-    hover_data={'# Games': average_rating_over_time_class_counts},
-    markers=True
+# Create time class line chart with bars of games played below
+ratings_over_time_by_time_class = make_subplots(
+    rows=2, cols=1,
+    shared_xaxes=True,
+    subplot_titles=('Average Rating per Day', 'Number of Games Played'),
+    vertical_spacing=0.1,
+    row_heights=[0.75, 0.25]  # Make the line chart row larger
 )
 
-# Customize the layout
+# Line chart for average rating over time
+for time_class in set(average_rating_over_time_class):
+    mask = [tc == time_class for tc in average_rating_over_time_class]
+    ratings_over_time_by_time_class.add_trace(
+        go.Scatter(
+            x=[d for d, m in zip(average_rating_over_time_dates, mask) if m],
+            y=[round(r, 1) for r, m in zip(average_rating_over_time, mask) if m],
+            mode='lines+markers',
+            name=time_class
+        ),
+        row=1, col=1
+    )
+
+# Bar chart for number of games played
+ratings_over_time_by_time_class.add_trace(
+    go.Bar(
+        x=average_rating_over_time_dates,
+        y=average_rating_over_time_class_counts,
+        name='# Games Played'
+    ),
+    row=2, col=1
+)
+
 ratings_over_time_by_time_class.update_layout(
-    xaxis_title='Date',
-    yaxis_title='Average Rating',
-    legend_title='Time Class'
+    height=600,
+    title_text='Ratings Over Time For Each Time Class',
 )
 
+ratings_over_time_by_time_class.update_xaxes(title_text='Date', row=2, col=1)
+ratings_over_time_by_time_class.update_yaxes(title_text='Average Rating', row=1, col=1)
+ratings_over_time_by_time_class.update_yaxes(title_text='Number of Games', row=2, col=1)
 
-# #########################################################
-# # Assemble Dashboard
-# #########################################################
+
+#########################################################
+# Assemble Dashboard
+#########################################################
 st.title(f"Chess Stats for {player}")
 
 col1, col2, col3, col4 = st.columns(4)
@@ -204,6 +237,4 @@ col3.plotly_chart(detailed_time_control_chart)
 
 st.plotly_chart(ratings_over_time_by_time_class)
 
-# st.subheader("TODO: Maybe add a heatmap of ways of results of wins vs results of losses?")
-# # st.metric(label="Total Games Played", value=50)
-
+# st.metric(label="Total Games Played", value=50)
