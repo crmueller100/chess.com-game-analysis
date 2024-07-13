@@ -16,16 +16,13 @@ docker run -it chess-analysis
 ### Usage
 The players' data will be saved to the `data/` directory using the directory name `data/game_archives/<player_username>/<year>_<month>`.
 
-Build the docker images and start the mongo and app services. Need to run `--build` when you add a new line to the `requirements.txt` file:
+Build the docker images and start the mongo and app services. Remember to run `--build` when you add a new line to the `requirements.txt` file:
 ```
-docker-compose up --build
-docker-compose up -d
+docker-compose up [--build] -d
 ```
 
 If you want to enter the app container to test/run some code, use this:
 ```
 docker exec -it <python container_id> bash
 ```
-
-Then you can simply run `python src/<somefile>.py`
-
+Run cd .. to get to the root directory. Then you can simply run `python app/main.py` or `python dashboard/dashboard.py`

@@ -70,13 +70,13 @@ def save_player_game_archives(player, game_archives):
     files_with_dates.sort(key=lambda x: (x[1], x[2]), reverse=True) # in the format [('2014_03.json', '2014', '03'), ('2014_02.json', '2014', '02'), ...]
     latest_file = files_with_dates[0][0] # This is the latest file. It's in the format of 'YYYY_MM.json'. We'll match it with all months to see which is the latest
 
-    # TODO: remove the [:3] to get all the games
-    for game in game_archives['archives'][:3]:
+    # TODO: remove the [:10] to get all the games
+    for game in game_archives['archives'][:10]:
         year = game.split('/')[-2]
         month = game.split('/')[-1]
 
         # If the player doesn't have a directory for that month, it's the latest month, or the hard_refresh_player_history flag is set to True, then we need to write the data to storage
-        if not os.path.exists(f"../data/game_archives/{player}/{year}_{month}.json") or f"{year}_{month}.json" == latest_file or os.getenv("HARD_REFRESH_PLAYER_HISTORY").lower() == "true":
+        if not os.path.exists(f"../data/game_archives/{player}/{year}_{month}.json") or f"{year}_{month}.json" == latest_file or os.getenv("HARD_REFRESH_PLAYER_HISTORY", "False").lower() == "true":
             url = f"https://api.chess.com/pub/player/{player}/games/{year}/{month}"
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
