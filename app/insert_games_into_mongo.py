@@ -6,6 +6,8 @@ from pymongo.errors import DuplicateKeyError
 
 
 def insert_games_into_mongo(client, db, collection, player):
+    # TODO: Don't need to try to insert the entire history every time. Maybe use latest month as a starting point and only insert new data.
+    # Probably could add another value to the config.yaml file to determine if we want to insert the whole history
     rootdir = f"../data/game_archives/{player}"
 
     for monthly_games in os.listdir(rootdir):

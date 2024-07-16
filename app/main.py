@@ -34,19 +34,7 @@ def main():
 
     # load the data
     insert_games_into_mongo(client, db, collection, player)
-    
-    # TODO: Delete! This is only a test
-    # print('hello')
-    # all_games = collection.find({"yyyy_mm": "2014_01"})
-
-    # collection.delete_many({"player": 'hikaru'})
-    # all_games = collection.find({'player': 'hikaru'})
-    # # print(collection.find_one({'_id': '82282996-91e2-11de-8000-000000010001'}))
-    # for game in all_games:
-    #     pprint(game)
-    #     # print(game)
-    #     break
-    
+        
     
 
 if __name__ == "__main__":

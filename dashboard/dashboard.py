@@ -15,7 +15,7 @@ client, db, collection = connect_to_mongo()
 
 with st.sidebar:
     player = st.text_input("Enter player username:")
-    time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "daily"]) # TODO: Eventually make it a multiselect (different data structure than single select): https://docs.streamlit.io/develop/api-reference/widgets/st.multiselect
+    time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"]) # TODO: Eventually make it a multiselect (different data structure than single select): https://docs.streamlit.io/develop/api-reference/widgets/st.multiselect
     color = st.radio("Color", ["All","White", "Black"]).lower()
     date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
 
@@ -222,6 +222,8 @@ col2.metric(label="Games Played as White", value=all_games_as_white)
 col3.metric(label="Games Played as Black", value=all_games_as_black)
 col4.metric(label="Games Played This Month", value=all_games_played_this_month, delta=all_games_played_this_month-all_games_played_last_month)
 
+st.plotly_chart(ratings_over_time_by_time_class)
+
 col1, col2 = st.columns([2,1])
 
 col1.plotly_chart(bar_chart_of_win_draw_loss_percentage)  
@@ -235,6 +237,6 @@ col1.plotly_chart(game_results_as_white)
 col2.plotly_chart(game_results_as_black)
 col3.plotly_chart(detailed_time_control_chart)
 
-st.plotly_chart(ratings_over_time_by_time_class)
+
 
 # st.metric(label="Total Games Played", value=50)
