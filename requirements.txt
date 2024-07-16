@@ -9,3 +9,4 @@ requests==2.32.3
 streamlit==1.36.0
 plotly==5.22.0
 Flask==3.0.3 # eventually delete this line
+PyYAML==6.0.1
