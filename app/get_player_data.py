@@ -50,13 +50,15 @@ def get_player_game_archives(player):
 
     return game_archives
 
-def save_player_game_archives(player, game_archives):
+def save_player_game_archives(player, game_archives, **kwargs):
     
     # All historical data should be complete months EXCEPT the most recent month. We can't be sure that the most recent month is a full set of data.
     # e.g. If we pull data on July 15th, then don't run the script until August, then July will only have half its data.
     # So we need to determine the LATEST month we have stored for each player and pull that + all future months.
     os.makedirs(f"../data/game_archives/{player}", exist_ok=True)
     player_directory = f"../data/game_archives/{player}/"
+
+    refresh_entire_history = kwargs.get('refresh_entire_history', False)
 
     files = os.listdir(player_directory)
     date_pattern = re.compile(r'(\d{4})_(\d{2})\.json$')
@@ -76,7 +78,7 @@ def save_player_game_archives(player, game_archives):
         month = game.split('/')[-1]
 
         # If the player doesn't have a directory for that month, it's the latest month, or the hard_refresh_player_history flag is set to True, then we need to write the data to storage
-        if not os.path.exists(f"../data/game_archives/{player}/{year}_{month}.json") or f"{year}_{month}.json" == latest_file or os.getenv("HARD_REFRESH_PLAYER_HISTORY", "False").lower() == "true":
+        if not os.path.exists(f"../data/game_archives/{player}/{year}_{month}.json") or f"{year}_{month}.json" == latest_file or refresh_entire_history:
             url = f"https://api.chess.com/pub/player/{player}/games/{year}/{month}"
             response = requests.get(url, headers=headers)
             if response.status_code == 200:

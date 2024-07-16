@@ -26,16 +26,14 @@ def main():
         print(f"Analyzing {player}'s data")
     
     # query the player's game history
-    # game_archives = get_player_game_archives(player)
-    # save_player_game_archives(player, game_archives)
+    game_archives = get_player_game_archives(player)
+    save_player_game_archives(player, game_archives, **config)
 
     # Connect to MongoDB
-    # client, db, collection  = connect_to_mongo()
+    client, db, collection  = connect_to_mongo()
 
     # load the data
-    # insert_games_into_mongo(client, db, collection, player)
-
-    # analyze_player_data(db, collection, player)
+    insert_games_into_mongo(client, db, collection, player)
     
     # TODO: Delete! This is only a test
     # print('hello')
