@@ -72,8 +72,7 @@ def save_player_game_archives(player, game_archives, **kwargs):
     files_with_dates.sort(key=lambda x: (x[1], x[2]), reverse=True) # in the format [('2014_03.json', '2014', '03'), ('2014_02.json', '2014', '02'), ...]
     latest_file = files_with_dates[0][0] # This is the latest file. It's in the format of 'YYYY_MM.json'. We'll match it with all months to see which is the latest
 
-    # TODO: remove the [:10] to get all the games
-    for game in game_archives['archives'][:10]:
+    for game in game_archives['archives']:
         year = game.split('/')[-2]
         month = game.split('/')[-1]
 
