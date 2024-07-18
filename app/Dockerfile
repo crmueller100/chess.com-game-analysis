@@ -10,4 +10,8 @@ COPY . .
 
 ENV PYTHONPATH=/app:/dashboard
 
-CMD ["python", "main.py"]
+# This runs the script that queries the API, saves the data, and loads it into the database
+# CMD ["python", "main.py"]
+
+# This is used to keep the container running. Useful for entering Docker container for development and testing
+ENTRYPOINT ["tail", "-f", "/dev/null"]
