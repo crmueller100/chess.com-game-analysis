@@ -217,6 +217,7 @@ ratings_over_time_by_time_class.update_yaxes(title_text='Number of Games', row=2
 st.title(f"Chess Stats for {player}")
 
 col1, col2, col3, col4 = st.columns(4)
+
 col1.metric(label="Total Games Played", value=all_games)
 col2.metric(label="Games Played as White", value=all_games_as_white)
 col3.metric(label="Games Played as Black", value=all_games_as_black)
