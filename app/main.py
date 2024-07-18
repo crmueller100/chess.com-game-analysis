@@ -32,9 +32,8 @@ def main():
     # Connect to MongoDB
     client, db, collection  = connect_to_mongo()
 
-    # load the data
+    # load the data into MongoDB
     insert_games_into_mongo(client, db, collection, player)
-        
     
 
 if __name__ == "__main__":
