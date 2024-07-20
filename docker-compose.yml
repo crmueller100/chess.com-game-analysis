@@ -31,24 +31,43 @@ services:
     networks:
       - my-network
 
-  dashboard:
-    build:
-      context: .
-      dockerfile: dashboard/Dockerfile
-    ports:
-      - 8501:8501
-    depends_on:
-      - app
-    environment:
-      - MONGO_HOST=my-mongodb
-      - MONGO_PORT=27017
-      - PYTHONPATH=/app:/dashboard
-    volumes:
-      - ./app:/app
-      - ./dashboard:/dashboard
-      - ./data:/data
-    networks:
-      - my-network
+  # dashboard:
+  #   build:
+  #     context: .
+  #     dockerfile: dashboard/Dockerfile
+  #   ports:
+  #     - 8501:8501
+  #   depends_on:
+  #     - app
+  #   environment:
+  #     - MONGO_HOST=my-mongodb
+  #     - MONGO_PORT=27017
+  #     - PYTHONPATH=/app:/dashboard
+  #   volumes:
+  #     - ./app:/app
+  #     - ./dashboard:/dashboard
+  #     - ./data:/data
+  #   networks:
+  #     - my-network
+
+  # airflow:
+  #   build:
+  #     context: .
+  #     dockerfile: airflow/Dockerfile
+  #   environment:
+  #     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+  #     - AIRFLOW__CORE__LOAD_EXAMPLES=False
+  #     - AIRFLOW_HOME=/opt/airflow
+  #   volumes:
+  #     - ./airflow/:/opt/airflow
+  #     # - ./airflow/dags:/opt/airflow/dags
+  #     # - ./airflow/logs:/opt/airflow/logs
+  #     # - ./airflow/plugins:/opt/airflow/plugins
+  #   ports:
+  #     - 8080:8080
+  #   networks:
+  #     - my-network
+  #   # entrypoint: ["bash", "-c", "airflow db migrate && airflow webserver & airflow scheduler"]
 
 networks:
   my-network:
