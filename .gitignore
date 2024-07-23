@@ -6,4 +6,7 @@ analysis.ipynb
 mongo_data/*
 !.gitkeep
 __pycache__/
-TODOs.txt 
+TODOs.txt
+.env
+logs/
+plugins/

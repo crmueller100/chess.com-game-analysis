@@ -8,6 +8,8 @@ from datetime import datetime
 
 def get_latest_game_in_database(client, db, collection, player):
     latest_month = collection.find_one({'player': player.lower()}, sort=[('month', pymongo.DESCENDING)], projection={"month": 1})
+    if latest_month is None:
+        return '2000_01'
     return latest_month['month']
 
 def insert_games_into_mongo(client, db, collection, player):
