@@ -20,7 +20,7 @@ def insert_games_into_mongo(client, db, collection, player):
         latest_month = '2000_01' # If no games are found, start earlier than chess.com was founded
 
     for monthly_games in os.listdir(rootdir):
-        yyyy_mm = monthly_games[:-5]
+        yyyy_mm = monthly_games[:-5] # Remove the .json extension
         
         yyyy_mm_datetime = datetime.strptime(yyyy_mm, "%Y_%m")
         latest_month_datetime = datetime.strptime(latest_month, "%Y_%m")

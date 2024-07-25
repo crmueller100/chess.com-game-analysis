@@ -2,9 +2,7 @@ import requests
 import os
 import json
 import re
-
 from pprint import pprint 
-
 from datetime import datetime
 
 from connect_to_mongo import connect_to_mongo
@@ -37,9 +35,7 @@ def get_player_game_archives(player):
         [
         https://api.chess.com/pub/player/hikaru/games/2014/01,
         https://api.chess.com/pub/player/hikaru/games/2014/02,
-        ... 
-        'https://api.chess.com/pub/player/hikaru/games/2024/06',
-        'https://api.chess.com/pub/player/hikaru/games/2024/07',
+        ...
         ]
         '''
     else:
