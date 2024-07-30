@@ -5,32 +5,24 @@ from airflow.models.param import Param
 
 from datetime import datetime
 
-# from app.test_print import *
-# import sys
-# sys.path.append('/opt/airflow/app')
+from get_player_data import get_player_data, get_player_game_archives
 
-# Now you can import the functions from the app module
-from get_player_data import get_player_data
-
-def test_print():
-    print(f"Hello all")
+def get_player_data_wrapper(player_username):
+    get_player_data(player=player_username)
 
 with DAG(
     dag_id="get_player_games_and_load_data",
-    # schedule="0 0 1 * *",
-    start_date=datetime(2024, 7, 1),
+    start_date=datetime(2024, 7, 1), # maybe make this datetime.utcnow()
     schedule_interval="@monthly",
     params={
-        "player_username": Param(default="hikaru", type="string", title="Enter in a player's username",)
+        "player_username": Param(default="hikaru", type="string", title="Enter in a player's username")
     },
 
 ) as dag:
     t1 = PythonOperator(
-    task_id="first_task",
-    python_callable=get_player_data,
-    op_kwargs={"player": "hikaru"},
-    dag=dag
-
+        task_id="check_player_exists",
+        python_callable=get_player_data,
+        op_kwargs={"player": "{{ params.player_username }}"},
+        dag=dag
     )
-    
     t1
