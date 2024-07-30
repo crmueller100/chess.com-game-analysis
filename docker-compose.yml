@@ -17,14 +17,17 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     # _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    _PIP_ADDITIONAL_REQUIREMENTS: "pymongo==4.7.3 requests==2.32.3 PyYAML==6.0.1"  # Add your requirements here
-    PYTHONPATH: /opt/airflow/app  # Add this line to set the Python path
+    _PIP_ADDITIONAL_REQUIREMENTS: "pymongo==4.7.3 requests==2.32.3 PyYAML==6.0.1"
+    PYTHONPATH: /opt/airflow:/opt/airflow/app
+    DATA_DIR: /opt/airflow/data
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/config:/opt/airflow/config
     - ./airflow/plugins:/opt/airflow/plugins
     - ./app:/opt/airflow/app  # Add this line
+    - ./data:/opt/airflow/data  # Ensure this is mounted correctly
+
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -57,6 +60,7 @@ services:
       - MONGO_HOST=my-mongodb
       - MONGO_PORT=27017
       - PYTHONPATH=/app:/dashboard
+      - DATA_DIR=/data
     volumes:
       - ./app:/app
       - ./dashboard:/dashboard
