@@ -10,3 +10,4 @@ TODOs.txt
 .env
 logs/
 plugins/
+test.py
