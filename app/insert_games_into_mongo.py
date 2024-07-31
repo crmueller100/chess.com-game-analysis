@@ -13,13 +13,14 @@ def get_latest_game_in_database(client, db, collection, player):
     return latest_month['month']
 
 def insert_games_into_mongo(client, db, collection, player):
-    rootdir = f"../data/game_archives/{player}"
+    data_dir = os.getenv("DATA_DIR", "../data")
+    player_directory = os.path.join(data_dir, f"game_archives/{player}")
 
     latest_month = get_latest_game_in_database(client, db, collection, player) # formated as YYYY_MM
     if not latest_month:
         latest_month = '2000_01' # If no games are found, start earlier than chess.com was founded
 
-    for monthly_games in os.listdir(rootdir):
+    for monthly_games in os.listdir(player_directory):
         yyyy_mm = monthly_games[:-5] # Remove the .json extension
         
         yyyy_mm_datetime = datetime.strptime(yyyy_mm, "%Y_%m")
@@ -27,7 +28,7 @@ def insert_games_into_mongo(client, db, collection, player):
         
         if yyyy_mm_datetime >= latest_month_datetime: # If the directory is the same or newer than the latest month in the database, insert the games
             try:
-                with open(f"{rootdir}/{monthly_games}", "r") as f:
+                with open(f"{player_directory}/{monthly_games}", "r") as f:
                     file_content = f.read().strip()
                     if file_content: # Check if the file is empty
                         f.seek(0)

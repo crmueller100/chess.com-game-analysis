@@ -20,6 +20,9 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: "pymongo==4.7.3 requests==2.32.3 PyYAML==6.0.1"
     PYTHONPATH: /opt/airflow:/opt/airflow/app
     DATA_DIR: /opt/airflow/data
+    MONGO_HOST: my-mongodb
+    MONGO_PORT: 27017
+
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
