@@ -37,12 +37,13 @@ def insert_games_into_mongo(client, db, collection, player):
                         
                         insert_count = 0
                         duplicate_count = 0
-                        for game in games:
+                        for game in games: # game type is <class 'dict'>
                             try:
-                                # The URL will be the default unique identifier (_id). Could use the UUID with collection.insert_one({"_id": game["uuid"], **game}) 
-                                collection.insert_one({"_id": game["uuid"], "player": player.lower(), "month": yyyy_mm, **game}) 
-                                # print(f"Inserted yyyy_mm {yyyy_mm} for player {player}")
-                                insert_count += 1
+                                if game.get("rules") == "chess": # Don't want to include other variants (bughouse, kingofthehill, 3check, etc...)
+                                    # The URL will be the default unique identifier (_id). Could use the UUID with collection.insert_one({"_id": game["uuid"], **game}) 
+                                    collection.insert_one({"_id": game["uuid"], "player": player.lower(), "month": yyyy_mm, **game}) 
+                                    # print(f"Inserted yyyy_mm {yyyy_mm} for player {player}")
+                                    insert_count += 1
                             except DuplicateKeyError:
                                 # print(f"Duplicate game found (skipping): {game.get('url')}")  
                                 duplicate_count += 1
