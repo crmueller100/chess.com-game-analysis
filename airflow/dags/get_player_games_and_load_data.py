@@ -23,7 +23,7 @@ def load_data_to_mongo_wrapper(**kwargs):
 
 with DAG(
     dag_id="get_player_games_and_load_data",
-    start_date=datetime(2024, 7, 1),  # maybe make this datetime.utcnow()
+    start_date=datetime.now(),
     schedule_interval="@monthly",
     params={
         "player_username": Param(default="hikaru", type="string", title="Enter in a player's username")
