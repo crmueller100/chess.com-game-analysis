@@ -10,6 +10,9 @@ COPY . .
 
 ENV PYTHONPATH=/app:/dashboard
 
+# Change the path to the Stockfish binary to match the path in the container
+ENV STOCKFISH_PATH /usr/local/bin/stockfish/stockfish-android-armv8
+
 # This runs the script that queries the API, saves the data, and loads it into the database
 # CMD ["python", "main.py"]
 
