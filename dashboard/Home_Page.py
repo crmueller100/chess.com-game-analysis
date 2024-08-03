@@ -8,7 +8,6 @@ st.set_page_config(
 st.title("Welcome to my Chess Analysis Dashboard!")  # More prominent title
 
 st.sidebar.success("Select a dashboard above.")
-# st.page_link("pages/1_Personal_Stats.py", label="Page 1", icon="1️⃣")
 
 st.markdown(
     """
@@ -20,8 +19,6 @@ st.markdown(
     * **Compare With Others:** Benchmark your skills against other players, including grandmasters.
     * **Track Your Progress:** Visualize your rating trends and improvement over time.
     * **Discover Your Strengths and Weaknesses:** Identify patterns in your openings, tactics, and endgames.
-
-    
 
     To get started, navigate through the dashboards using the sidebar on the left.
 

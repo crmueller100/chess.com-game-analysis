@@ -6,7 +6,7 @@ import yaml
 
 
 from connect_to_mongo import connect_to_mongo
-from get_player_data import get_player_game_archives, save_player_game_archives
+from get_player_data import get_player_game_archives, save_player_game_archives, get_player_data
 from insert_games_into_mongo import insert_games_into_mongo
 
 def main():    
@@ -24,6 +24,8 @@ def main():
         sys.exit()
     else:
         print(f"Analyzing {player}'s data")
+    
+    get_player_data(player)
     
     # query the player's game history
     game_archives = get_player_game_archives(player)
