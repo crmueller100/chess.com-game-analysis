@@ -12,6 +12,8 @@ async def main() -> None:
     client, db, collection  = connect_to_mongo()
     x = collection.find_one()
     pgn = x['pgn']
+    
+    player_color = 'white' if x['player'] in x['white'].keys() else 'black'
 
     game = chess.pgn.read_game(io.StringIO(pgn))  
 
@@ -23,24 +25,29 @@ async def main() -> None:
     white_cp = []
     black_cp = []
 
+    white_expectation = []
+    black_expectation = []
+
     count = 0
     for move in game.mainline_moves():
-        print(count)
+        # print(count)
         count += 1
-        board.push(move)
-        info = await engine.analyse(board, chess.engine.Limit(time=0.1))
+        info = await engine.analyse(board, chess.engine.Limit(time=0.01)) # TODO: Change this back to 0.1
 
-        # TODO: Eventually handle scoring of mates better. Probably should just append a really large value to the array.
+        white_expectation.append(info["score"].white().wdl().expectation())
+        black_expectation.append(info["score"].black().wdl().expectation())
         if board.turn == chess.WHITE:
             if info["score"].white().score() is not None: # The score will be None if there is a forced mate
                 white_cp.append(info["score"].white().score()) # Positive for White's advantage
         else:
             if info["score"].black().score() is not None:
                 black_cp.append(-info["score"].black().score())  # Negate for Black's advantage
-
+        board.push(move)
     await engine.quit()
 
-    print("White's centipawn advantage:", white_cp)
-    print("Black's centipawn advantage:", black_cp)
+    print("White's expectation of winning:", white_expectation)
+    print("White's cp:", white_cp)
+    print("White's expectation of winning:", white_expectation)
+    print("Black's cp:", black_cp)
 
 asyncio.run(main())
