@@ -1,6 +1,7 @@
 import streamlit as st
-from queries import *
 from datetime import datetime
+import time
+from time import strftime
 from dateutil.relativedelta import relativedelta
 
 import plotly.express as px
@@ -9,6 +10,7 @@ from plotly.subplots import make_subplots
 
 from collections import defaultdict
 
+from queries import *
 
 # Connect to MongoDB
 client, db, collection = connect_to_mongo()
@@ -53,6 +55,8 @@ if date:
 
 current_month = datetime.now().strftime('%Y_%m')
 last_month = (datetime.now() - relativedelta(months=1)).strftime('%Y_%m')
+
+latest_game_data = strftime('%m/%d/%y', time.gmtime(get_latest_game(collection, player)['end_time']))
 
 all_games = get_all_games(collection, player, time_class, color, date)
 all_games_as_white = get_all_games_as_white(collection, player, time_class, color, date)
@@ -214,7 +218,7 @@ ratings_over_time_by_time_class.update_yaxes(title_text='Number of Games', row=2
 #########################################################
 # Assemble Dashboard
 #########################################################
-st.title(f"Chess Stats for {player}")
+st.title(f"{player}'s stats as of {latest_game_data}")
 
 col1, col2, col3, col4 = st.columns(4)
 

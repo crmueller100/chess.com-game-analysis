@@ -7,6 +7,10 @@ from connect_to_mongo import connect_to_mongo
 # TODO: delete this 
 client, db, collection  = connect_to_mongo()
 
+def get_latest_game(collection, player):
+    filter_query = { "player": player }
+    return collection.find_one(filter_query, sort=[("end_time", pymongo.DESCENDING)], projection={"end_time": 1})
+
 def get_all_games(collection, player, time_class=None, color=None, date=None):
     filter_query = { "player": player }
     if time_class:
