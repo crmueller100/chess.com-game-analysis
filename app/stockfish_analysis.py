@@ -117,5 +117,9 @@ async def analyze_wdl_with_stockfish() -> None:
 
 if __name__ == "__main__":
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'config.yaml')
+
+    # TODO: Maybe pass in **config as an argument to the function?
     asyncio.run(analyze_wdl_with_stockfish())
+
+    # TODO: Should probably calculate the player errors in a separate function
 
