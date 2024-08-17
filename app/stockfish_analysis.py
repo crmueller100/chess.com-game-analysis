@@ -20,6 +20,7 @@ async def analyze_wdl_with_stockfish(**config) -> None:
 
     client, db, collection  = connect_to_mongo()
 
+    # TODO: Need to allow user to select what game they want to analyze
     g = collection.find_one({'player': player})
     
     if g is None:
