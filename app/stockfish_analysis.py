@@ -16,6 +16,9 @@ async def analyze_wdl_with_stockfish() -> None:
     player = config.get('username')
     stockfish_time_limit = config.get('stockfish_time_limit', 0.1)
     overwrite_stockfish_analysis = config.get('overwrite_stockfish_analysis', False)
+    wdl_blunder_threshold = config.get('wdl_blunder_threshold', 0.5)
+    wdl_mistake_threshold = config.get('wdl_blunder_threshold', 0.2)
+    wdl_inaccuracy_threshold = config.get('wdl_blunder_threshold', 0.1)
 
     client, db, collection  = connect_to_mongo()
 
@@ -62,7 +65,6 @@ async def analyze_wdl_with_stockfish() -> None:
     filter_query = {'_id': g['_id']}
 
     if overwrite_stockfish_analysis: 
-        # Use $set to unconditionally update (or create) the field
         update_operation = {'$set': {f"player_expectation": player_expectation}}
     else:
         update_operation = {'$setOnInsert': {f"player_expectation": player_expectation}}
@@ -75,7 +77,42 @@ async def analyze_wdl_with_stockfish() -> None:
     else:
         print(f"No changes made to document with _id: {g['_id']} for {player_color} (player_expectation might already exist)")
 
-    
+
+    # Calculate the number of blunders, mistakes and inaccuracies
+    num_blunders = 0
+    num_mistakes = 0
+    num_inaccuracies = 0
+
+    for i in range(1, len(player_expectation)):
+        wdl_change = player_expectation[i] - player_expectation[i-1]
+
+        if wdl_change > wdl_blunder_threshold:
+            num_blunders +=1 
+        elif wdl_change > wdl_mistake_threshold:
+            num_mistakes += 1
+        elif wdl_change > wdl_inaccuracy_threshold:
+            num_inaccuracies += 1
+
+    if overwrite_stockfish_analysis: 
+        update_operation = {
+            '$set': {
+                "num_blunders": num_blunders,
+                "num_mistakes": num_mistakes,
+                "num_inaccuracies": num_inaccuracies
+                }
+            }
+    else:
+        update_operation = {
+            '$setOnInsert': {
+                "num_blunders": num_blunders,
+                "num_mistakes": num_mistakes,
+                "num_inaccuracies": num_inaccuracies
+                }
+            }
+
+    result = collection.update_one(filter_query, update_operation, upsert=False) # uses same filter_query as above
+
+
     client.close()
 
 if __name__ == "__main__":
