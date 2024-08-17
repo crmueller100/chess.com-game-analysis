@@ -9,9 +9,7 @@ import yaml
 import chess.pgn 
 from connect_to_mongo import connect_to_mongo
 
-async def analyze_wdl_with_stockfish() -> None:
-    with open(config_path, 'r') as file:
-        config = yaml.safe_load(file)
+async def analyze_wdl_with_stockfish(**config) -> None:
     
     player = config.get('username')
     stockfish_time_limit = config.get('stockfish_time_limit', 0.1)
@@ -22,7 +20,6 @@ async def analyze_wdl_with_stockfish() -> None:
 
     client, db, collection  = connect_to_mongo()
 
-    # TODO: Make this a configurable value
     g = collection.find_one({'player': player})
     
     if g is None:
@@ -112,14 +109,11 @@ async def analyze_wdl_with_stockfish() -> None:
 
     result = collection.update_one(filter_query, update_operation, upsert=False) # uses same filter_query as above
 
-
     client.close()
 
 if __name__ == "__main__":
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'config.yaml')
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
 
-    # TODO: Maybe pass in **config as an argument to the function?
-    asyncio.run(analyze_wdl_with_stockfish())
-
-    # TODO: Should probably calculate the player errors in a separate function
-
+    asyncio.run(analyze_wdl_with_stockfish(**config))
