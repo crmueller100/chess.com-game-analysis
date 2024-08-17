@@ -21,25 +21,21 @@ client, db, collection = connect_to_mongo()
 with st.sidebar:
     player = st.text_input("Enter player username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"]) 
-    color = st.radio("Color", ["All","White", "Black"]).lower()
     date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
 
-player = 'hikaru'
-print('\n\n\n\n')
+# player = 'hikaru'
+# print('\n\n\n\n')
 
-if not player:
-    st.error("Please enter a player username")
-    st.stop()
-else:
-    player = player.lower() # make it case-insensitive because the data is stored in lowercase
+# Don't want an `if not player` error like on the other dashboard. Should be able to browse all games.
+if player:
+    player = player.lower()
 
 if time_class == "All":
     time_class = None
 
-if color == "all":
-    color = None
-
-if not collection.find_one({"player": player}):
+if not player:
+    pass
+elif not collection.find_one({"player": player}):
     st.error("No user data for selected player. Enter a valid player username.")
     st.stop()
 
@@ -48,8 +44,8 @@ if not collection.find_one({"player": player}):
 # Query Mongo and collect all the data
 #########################################################
 
-games = collection.find({'player': player}).limit(100)
-pprint(collection.find_one({'player': player}))
+games = display_100_games(collection, player, time_class, date)
+# pprint(collection.find_one({'player': player})) # TODO: delete this
 
 keys_to_display = ["_id", "url"]
 
@@ -66,7 +62,13 @@ for game in games:
     elif game.get('time_control') == '180':
         tc = '3 min blitz'
     elif game.get('time_control') == '300':
-        tc = '3 min bullet'
+        tc = '5 min blitz'
+    elif game.get('time_control') == '600':
+        tc = '10 min rapid'
+    elif game.get('time_control') == '900':
+        tc = '15 min rapid'
+    elif game.get('time_control') == '1800':
+        tc = '30 min rapid'
     elif game.get('time_control') == '1/259200':
         tc = '3 day'
 

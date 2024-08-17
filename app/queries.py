@@ -4,9 +4,6 @@ from datetime import datetime
 
 from connect_to_mongo import connect_to_mongo
 
-# TODO: delete this 
-client, db, collection  = connect_to_mongo()
-
 def get_latest_game(collection, player):
     filter_query = { "player": player }
     return collection.find_one(filter_query, sort=[("end_time", pymongo.DESCENDING)], projection={"end_time": 1})
@@ -270,3 +267,19 @@ def rating_of_time_controls_over_time(collection, player, time_class, color, dat
 
     result = list(collection.aggregate(pipeline))
     return result
+
+
+#######################################################
+# Queries for Stockfish Analysis
+#######################################################
+
+def display_100_games(collection, player=None, time_class=None, date=None):
+    filter_query = {}
+    if player:
+        filter_query["player"] = player
+    if time_class:
+        filter_query["time_class"] = time_class
+    if date:
+        filter_query["end_time"] = {"$gte": date}
+
+    return collection.find(filter_query).limit(100)
