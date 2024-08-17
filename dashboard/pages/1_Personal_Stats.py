@@ -21,7 +21,7 @@ with st.sidebar:
     color = st.radio("Color", ["All","White", "Black"]).lower()
     date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
 
-# player = 'test_player'
+# player = 'hikaru'
 # print('\n\n\n\n')
 
 if not player:

@@ -19,6 +19,9 @@ with st.sidebar:
     color = st.radio("Color", ["All","White", "Black"]).lower()
     date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
 
+# player = 'hikaru'
+# print('\n\n\n\n')
+
 if not player:
     st.error("Please enter a player username")
     st.stop()
