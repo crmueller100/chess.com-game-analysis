@@ -51,13 +51,26 @@ if not collection.find_one({"player": player}):
 games = collection.find({'player': player}).limit(100)
 pprint(collection.find_one({'player': player}))
 
-keys_to_display = ["_id", "url", "time_control"]
+keys_to_display = ["_id", "url"]
 
 table_data = []
 
 # Extract values for the specified keys from each game document
 for game in games:
     row_data = {key: game.get(key) for key in keys_to_display}
+    tc = game.get('time_control')
+    if game.get('time_control') == '30':
+        tc = '30 sec bullet'
+    elif game.get('time_control') == '60':
+        tc = '1 min bullet'
+    elif game.get('time_control') == '180':
+        tc = '3 min blitz'
+    elif game.get('time_control') == '300':
+        tc = '3 min bullet'
+    elif game.get('time_control') == '1/259200':
+        tc = '3 day'
+
+    row_data['Time control'] = tc
     row_data['Winner'] = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
     row_data['White'] = game.get('white', {}).get('username')
     row_data['White Rating'] = game.get('white', {}).get('rating')
