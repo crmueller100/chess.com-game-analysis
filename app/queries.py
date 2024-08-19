@@ -280,6 +280,6 @@ def display_100_games(collection, player=None, time_class=None, date=None):
     if time_class:
         filter_query["time_class"] = time_class
     if date:
-        filter_query["end_time"] = {"$gte": date}
+        filter_query["start_time"] = {"$gte": date}
 
     return collection.find(filter_query).limit(100)
