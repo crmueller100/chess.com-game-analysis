@@ -20,6 +20,7 @@ client, db, collection = connect_to_mongo()
 
 with st.sidebar:
     player = st.text_input("Enter player username:")
+    player2 = st.text_input("Enter opponent username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"]) 
     date = st.date_input('End Date', value=None, min_value=datetime(2005,1,1))
 
@@ -29,6 +30,9 @@ with st.sidebar:
 # Don't want an `if not player` error like on the other dashboard. Should be able to browse all games.
 if player:
     player = player.lower()
+
+if player2:
+    player2 = player2.lower()
 
 if time_class == "All":
     time_class = None
@@ -40,7 +44,7 @@ if date:
 # Query Mongo and collect all the data
 #########################################################
 
-games = display_100_games(collection, player, time_class, date)
+games = display_100_games(collection, player, player2, time_class, date)
 
 keys_to_display = ["_id", "url"]
 

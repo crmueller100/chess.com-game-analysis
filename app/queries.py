@@ -273,12 +273,17 @@ def rating_of_time_controls_over_time(collection, player, time_class, color, dat
 # Queries for Stockfish Analysis
 #######################################################
 
-def display_100_games(collection, player=None, time_class=None, date=None):
+def display_100_games(collection, player=None, player2=None, time_class=None, date=None):
     filter_query = {}
     if player:
         filter_query["$or"] = [
             {"white.username": {"$regex": f"^{player}$", "$options": "i"}},
             {"black.username": {"$regex": f"^{player}$", "$options": "i"}}
+        ]
+    if player2:
+        filter_query["$or"] = [
+            {"white.username": {"$regex": f"^{player2}$", "$options": "i"}},
+            {"black.username": {"$regex": f"^{player2}$", "$options": "i"}}
         ]
 
     if time_class:
