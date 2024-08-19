@@ -33,34 +33,14 @@ if player:
 if time_class == "All":
     time_class = None
 
-if not player:
-    pass
-elif not collection.find_one({"player": player}):
-    st.error("No user data for selected player. Enter a valid player username.")
-    st.stop()
-
-# TODO: fix the time filter thing
 if date:
     date = datetime.combine(date, datetime.min.time()).timestamp() # cast date to datetime and convert to epoch time
-    # latest_end_time_for_player = collection.find({"player": player}).sort({"end_time": -1}).limit(1)
-    # if latest_end_time_for_player.count() > 0: # check if documents exist for the player
-    #     latest_end_time_value = latest_end_time_for_player[0]["end_time"]
-    #     if date > latest_end_time_value:
-    #         st.error(f"No data for selected date range. Enter an earlier date. The latest date with game data for {player} is {datetime.fromtimestamp(latest_end_time_value).strftime('%Y-%m-%d')}.")
-    #         st.stop()
-    # else:
-    #     st.error(f"No game data found for player {player}")
-    #     st.stop()
-
-print(f" date is {date}")
 
 #########################################################
 # Query Mongo and collect all the data
 #########################################################
 
-# TODO: Make it so the player filter checks for the player in the white and black fields
 games = display_100_games(collection, player, time_class, date)
-# pprint(collection.find_one({'player': player})) # TODO: delete this
 
 keys_to_display = ["_id", "url"]
 
@@ -102,11 +82,13 @@ for game in games:
 
     table_data.append(row_data)
 
+
 df = pd.DataFrame(table_data)
 
-# Convert the rating columns to strings to remove commas
-df['White Rating'] = df['White Rating'].astype(str)
-df['Black Rating'] = df['Black Rating'].astype(str)
+if not df.empty:
+    # Convert the rating columns to strings to remove commas
+    df['White Rating'] = df['White Rating'].astype(str)
+    df['Black Rating'] = df['Black Rating'].astype(str)
 
 st.dataframe(df)
 

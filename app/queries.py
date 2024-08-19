@@ -276,7 +276,11 @@ def rating_of_time_controls_over_time(collection, player, time_class, color, dat
 def display_100_games(collection, player=None, time_class=None, date=None):
     filter_query = {}
     if player:
-        filter_query["player"] = player
+        filter_query["$or"] = [
+            {"white.username": {"$regex": f"^{player}$", "$options": "i"}},
+            {"black.username": {"$regex": f"^{player}$", "$options": "i"}}
+        ]
+
     if time_class:
         filter_query["time_class"] = time_class
     if date:
