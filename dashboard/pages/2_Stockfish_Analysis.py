@@ -21,7 +21,7 @@ client, db, collection = connect_to_mongo()
 with st.sidebar:
     player = st.text_input("Enter player username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"]) 
-    date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
+    date = st.date_input('End Date', value=None, min_value=datetime(2005,1,1))
 
 # player = 'hikaru'
 # print('\n\n\n\n')
@@ -39,11 +39,26 @@ elif not collection.find_one({"player": player}):
     st.error("No user data for selected player. Enter a valid player username.")
     st.stop()
 
+# TODO: fix the time filter thing
+if date:
+    date = datetime.combine(date, datetime.min.time()).timestamp() # cast date to datetime and convert to epoch time
+    # latest_end_time_for_player = collection.find({"player": player}).sort({"end_time": -1}).limit(1)
+    # if latest_end_time_for_player.count() > 0: # check if documents exist for the player
+    #     latest_end_time_value = latest_end_time_for_player[0]["end_time"]
+    #     if date > latest_end_time_value:
+    #         st.error(f"No data for selected date range. Enter an earlier date. The latest date with game data for {player} is {datetime.fromtimestamp(latest_end_time_value).strftime('%Y-%m-%d')}.")
+    #         st.stop()
+    # else:
+    #     st.error(f"No game data found for player {player}")
+    #     st.stop()
+
+print(f" date is {date}")
 
 #########################################################
 # Query Mongo and collect all the data
 #########################################################
 
+# TODO: Make it so the player filter checks for the player in the white and black fields
 games = display_100_games(collection, player, time_class, date)
 # pprint(collection.find_one({'player': player})) # TODO: delete this
 
@@ -79,11 +94,11 @@ for game in games:
     row_data['Black'] = game.get('black', {}).get('username')
     row_data['Black Rating'] = game.get('black', {}).get('rating')
 
-    start_time = game.get('start_time')
-    if start_time:
-        row_data['Start Date'] = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d')
+    end_time = game.get('end_time')
+    if end_time:
+        row_data['End Date'] = datetime.fromtimestamp(end_time).strftime('%Y-%m-%d')
     else:
-        row_data['Start Date'] = 'N/A'
+        row_data['End Date'] = 'N/A'
 
     table_data.append(row_data)
 
