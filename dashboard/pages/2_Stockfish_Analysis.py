@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from time import strftime, localtime
 
@@ -23,7 +24,8 @@ with st.sidebar:
     player1 = st.text_input("Enter player username:")
     player2 = st.text_input("Enter opponent username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"]) 
-    date = st.date_input('End Date', value=None, min_value=datetime(2005,1,1))
+    date_begin = st.date_input('Date Range Start', value=None, min_value=datetime(2005,1,1))
+    date_end = st.date_input('Date Range End', value=None, min_value=datetime(2005,1,1))
 
 
 # Don't want an `if not player` error like on the other dashboard. Should be able to browse all games.
@@ -36,14 +38,19 @@ if player2:
 if time_class == "All":
     time_class = None
 
-if date:
-    date = datetime.combine(date, datetime.min.time()).timestamp() # cast date to datetime and convert to epoch time
+if date_begin:
+    date_begin = datetime.combine(date_begin, datetime.min.time()).timestamp() # cast date to datetime and convert to epoch time
+
+if date_end:
+    date_end = datetime.combine(date_end, datetime.min.time()) + timedelta(days=1) # Add one day because the date picker defaults to midnight of the selected day
+    date_end = date_end.timestamp() 
+
 
 #########################################################
 # Query Mongo and collect all the data
 #########################################################
 
-games = display_100_games(collection, player1, player2, time_class, date)
+games = display_100_games(collection, player1, player2, time_class, date_begin, date_end)
 
 table_data = []
 keys_to_display = ["_id", "url"]

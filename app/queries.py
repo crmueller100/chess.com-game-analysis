@@ -273,7 +273,7 @@ def rating_of_time_controls_over_time(collection, player, time_class, color, dat
 # Queries for Stockfish Analysis
 #######################################################
 
-def display_100_games(collection, player1=None, player2=None, time_class=None, date=None):
+def display_100_games(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
     filter_query = {}
     
     # Combine $or conditions for each player individually (if provided)
@@ -303,7 +303,13 @@ def display_100_games(collection, player1=None, player2=None, time_class=None, d
     if time_class:
         filter_query["time_class"] = time_class
         
-    if date:
-        filter_query["end_time"] = {"$gte": date}
+    if date_start and not date_end:
+        filter_query["end_time"] = {"$gte": date_start}
+
+    if not date_start and date_end:
+        filter_query["end_time"] = {"$lte": date_end}
+    
+    if date_start and date_end:
+        filter_query["end_time"] = {"$gte": date_start, "$lte": date_end}
 
     return collection.find(filter_query).limit(100)
