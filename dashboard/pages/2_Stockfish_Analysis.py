@@ -1,19 +1,10 @@
 import streamlit as st
 from datetime import datetime
 from datetime import timedelta
-from dateutil.relativedelta import relativedelta
-from time import strftime, localtime
-
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-from collections import defaultdict
-from pprint import pprint
 
 import pandas as pd
-import numpy as np
 import re
+from pprint import pprint
 
 from queries import *
 
@@ -83,7 +74,7 @@ for game in games:
             tc = '15 min rapid'
         elif base_time == '1800':
             tc = '30 min rapid'
-        elif base_time == '1/259200':
+        elif tc == '1/259200': # Don't use regex on this game format
             tc = '3 day'
         
         if increment is not None:
