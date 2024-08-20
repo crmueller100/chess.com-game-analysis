@@ -19,17 +19,15 @@ from queries import *
 client, db, collection = connect_to_mongo()
 
 with st.sidebar:
-    player = st.text_input("Enter player username:")
+    player1 = st.text_input("Enter player username:")
     player2 = st.text_input("Enter opponent username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"]) 
     date = st.date_input('End Date', value=None, min_value=datetime(2005,1,1))
 
-# player = 'hikaru'
-# print('\n\n\n\n')
 
 # Don't want an `if not player` error like on the other dashboard. Should be able to browse all games.
-if player:
-    player = player.lower()
+if player1:
+    player1 = player1.lower()
 
 if player2:
     player2 = player2.lower()
@@ -44,11 +42,10 @@ if date:
 # Query Mongo and collect all the data
 #########################################################
 
-games = display_100_games(collection, player, player2, time_class, date)
-
-keys_to_display = ["_id", "url"]
+games = display_100_games(collection, player1, player2, time_class, date)
 
 table_data = []
+keys_to_display = ["_id", "url"]
 
 # Extract values for the specified keys from each game document
 for game in games:
@@ -94,6 +91,7 @@ if not df.empty:
     df['White Rating'] = df['White Rating'].astype(str)
     df['Black Rating'] = df['Black Rating'].astype(str)
 
+st.title(f"Game Explorer")
 st.dataframe(df)
 
 
@@ -106,5 +104,4 @@ st.dataframe(df)
 # Assemble Dashboard
 #########################################################
 
-st.title(f"Stockfish Analysis for {player}")
 

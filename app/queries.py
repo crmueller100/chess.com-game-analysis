@@ -273,21 +273,36 @@ def rating_of_time_controls_over_time(collection, player, time_class, color, dat
 # Queries for Stockfish Analysis
 #######################################################
 
-def display_100_games(collection, player=None, player2=None, time_class=None, date=None):
+def display_100_games(collection, player1=None, player2=None, time_class=None, date=None):
     filter_query = {}
-    if player:
-        filter_query["$or"] = [
-            {"white.username": {"$regex": f"^{player}$", "$options": "i"}},
-            {"black.username": {"$regex": f"^{player}$", "$options": "i"}}
-        ]
+    
+    # Combine $or conditions for each player individually (if provided)
+    player1_filters = []
+    if player1:
+        player1_filters.extend([
+            {"white.username": {"$regex": f"^{player1}$", "$options": "i"}}, 
+            {"black.username": {"$regex": f"^{player1}$", "$options": "i"}}
+        ])
+    
+    player2_filters = []
     if player2:
-        filter_query["$or"] = [
+        player2_filters.extend([
             {"white.username": {"$regex": f"^{player2}$", "$options": "i"}},
             {"black.username": {"$regex": f"^{player2}$", "$options": "i"}}
+        ])
+    if player1 and player2:
+        filter_query["$and"] = [
+            {"$or": player1_filters},
+            {"$or": player2_filters}
         ]
+    elif player1:
+        filter_query["$or"] = player1_filters
+    elif player2:
+        filter_query["$or"] = player2_filters
 
     if time_class:
         filter_query["time_class"] = time_class
+        
     if date:
         filter_query["end_time"] = {"$gte": date}
 
