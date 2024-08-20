@@ -17,9 +17,11 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     # _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    _PIP_ADDITIONAL_REQUIREMENTS: "pymongo==4.7.3 requests==2.32.3 PyYAML==6.0.1"
+    _PIP_ADDITIONAL_REQUIREMENTS: "pymongo==4.7.3 requests==2.32.3 PyYAML==6.0.1 chess==1.10.0 asyncio==3.4.3"
     PYTHONPATH: /opt/airflow:/opt/airflow/app
     DATA_DIR: /opt/airflow/data
+    STOCKFISH_PATH: /usr/local/bin/stockfish/stockfish-android-armv8
+
     MONGO_HOST: my-mongodb
     MONGO_PORT: 27017
 
@@ -30,6 +32,7 @@ x-airflow-common:
     - ./airflow/plugins:/opt/airflow/plugins
     - ./app:/opt/airflow/app
     - ./data:/opt/airflow/data
+    - ./stockfish:/usr/local/bin/stockfish
 
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
