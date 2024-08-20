@@ -57,8 +57,6 @@ for game in games:
 
     if match:
         base_time, increment = match.groups()  # Extract the two parts
-
-        print(f"base_time: {base_time}, increment: {increment}")
         
         if base_time == '30':
             tc = '30 sec bullet'
@@ -95,6 +93,7 @@ for game in games:
 
     table_data.append(row_data)
 
+st.title(f"Game Explorer")
 
 df = pd.DataFrame(table_data)
 
@@ -102,8 +101,10 @@ if not df.empty:
     # Convert the rating columns to strings to remove commas
     df['White Rating'] = df['White Rating'].astype(str)
     df['Black Rating'] = df['Black Rating'].astype(str)
+else:
+    st.error("No games found for the specified criteria.")
+    st.stop()
 
-st.title(f"Game Explorer")
 st.dataframe(df)
 
 
