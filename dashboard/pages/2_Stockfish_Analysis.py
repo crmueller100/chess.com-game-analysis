@@ -44,7 +44,7 @@ if date_end:
 games = display_100_games(collection, player1, player2, time_class, date_begin, date_end)
 
 table_data = []
-keys_to_display = ["_id", "url"]
+keys_to_display = ["_id", "url", "player_expectation", "num_blunders","num_mistakes","num_inaccurcies"]
 
 # Extract values for the specified keys from each game document
 for game in games:
@@ -107,6 +107,20 @@ else:
 
 st.dataframe(df)
 
+st.title(f"Stockfish Analysis")
+
+col1, col2, col3, col4 = st.columns(4)
+number_of_games_analyzed = count_number_of_games_analyzed(collection, player1, player2, time_class, date_begin, date_end)
+col1.metric(label="Games Analyzed by Stockfish", value=number_of_games_analyzed)
+
+number_of_blunders = count_number_of_blunders(collection, player1, player2, time_class, date_begin, date_end)
+col2.metric(label="Number of Blunders", value=number_of_blunders)
+
+number_of_inaccuracies = count_number_of_inaccuracies(collection, player1, player2, time_class, date_begin, date_end)
+col3.metric(label="Number of Inaccuracies", value=number_of_inaccuracies)
+
+number_of_mistakes = count_number_of_mistakes(collection, player1, player2, time_class, date_begin, date_end)
+col4.metric(label="Number of Mistakes", value=number_of_mistakes)
 
 #########################################################
 # Create and save charts as figures

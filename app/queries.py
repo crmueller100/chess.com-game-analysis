@@ -273,43 +273,111 @@ def rating_of_time_controls_over_time(collection, player, time_class, color, dat
 # Queries for Stockfish Analysis
 #######################################################
 
-def display_100_games(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
+def build_filter_query(collection, player=None, player2=None, time_class=None, date_start=None, date_end=None):
     filter_query = {}
-    
+
     # Combine $or conditions for each player individually (if provided)
     player1_filters = []
-    if player1:
+    if player:
         player1_filters.extend([
-            {"white.username": {"$regex": f"^{player1}$", "$options": "i"}}, 
-            {"black.username": {"$regex": f"^{player1}$", "$options": "i"}}
+            {"white.username": {"$regex": f"^{player}$", "$options": "i"}}, 
+            {"black.username": {"$regex": f"^{player}$", "$options": "i"}}
         ])
-    
+
     player2_filters = []
     if player2:
         player2_filters.extend([
             {"white.username": {"$regex": f"^{player2}$", "$options": "i"}},
             {"black.username": {"$regex": f"^{player2}$", "$options": "i"}}
         ])
-    if player1 and player2:
+
+    # Combine player filters using $and if both players are provided
+    if player and player2:
         filter_query["$and"] = [
             {"$or": player1_filters},
             {"$or": player2_filters}
         ]
-    elif player1:
+    elif player:
         filter_query["$or"] = player1_filters
     elif player2:
         filter_query["$or"] = player2_filters
 
     if time_class:
         filter_query["time_class"] = time_class
-        
+
     if date_start and not date_end:
         filter_query["end_time"] = {"$gte": date_start}
 
     if not date_start and date_end:
         filter_query["end_time"] = {"$lte": date_end}
-    
+
     if date_start and date_end:
         filter_query["end_time"] = {"$gte": date_start, "$lte": date_end}
 
+    return filter_query
+
+
+def display_100_games(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+    
     return collection.find(filter_query).limit(100)
+
+def count_number_of_games_analyzed(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+    filter_query["player_expectation"] = {"$exists": True}
+
+    count = collection.count_documents(filter_query)
+    return count
+
+def count_number_of_games_analyzed(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+    filter_query["player_expectation"] = {"$exists": True}
+
+    count = collection.count_documents(filter_query)
+    return count
+
+def count_number_of_blunders(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+
+    pipeline = [
+        {"$match": filter_query},
+        {"$group": {"_id": None, "total_blunders": {"$sum": {"$ifNull": ["$num_blunders", 0]}}}}
+    ]
+
+    result = list(collection.aggregate(pipeline))
+    if result:
+        total_blunders = result[0]["total_blunders"]
+        return total_blunders 
+    else:
+        return 0
+
+def count_number_of_inaccuracies(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+
+    pipeline = [
+        {"$match": filter_query},
+        {"$group": {"_id": None, "total_inaccuracies": {"$sum": {"$ifNull": ["$num_inaccuracies", 0]}}}}
+    ]
+
+    result = list(collection.aggregate(pipeline))
+    if result:
+        total_blunders = result[0]["total_inaccuracies"]
+        return total_blunders 
+    else:
+        return 0
+
+def count_number_of_mistakes(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+
+    pipeline = [
+        {"$match": filter_query},
+        {"$group": {"_id": None, "total_mistakes": {"$sum": {"$ifNull": ["$num_mistakes", 0]}}}}
+    ]
+
+    result = list(collection.aggregate(pipeline))
+    if result:
+        total_blunders = result[0]["total_mistakes"]
+        return total_blunders 
+    else:
+        return 0
+
