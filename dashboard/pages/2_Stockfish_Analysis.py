@@ -12,6 +12,7 @@ from pprint import pprint
 
 import pandas as pd
 import numpy as np
+import re
 
 from queries import *
 
@@ -50,23 +51,36 @@ keys_to_display = ["_id", "url"]
 # Extract values for the specified keys from each game document
 for game in games:
     row_data = {key: game.get(key) for key in keys_to_display}
+
+    time_control_str = game.get('time_control')
+    match = re.match(r"(\d+)(?:\+(\d+))?", time_control_str)  # Match base time and increment
+    
     tc = game.get('time_control')
-    if game.get('time_control') == '30':
-        tc = '30 sec bullet'
-    elif game.get('time_control') == '60':
-        tc = '1 min bullet'
-    elif game.get('time_control') == '180':
-        tc = '3 min blitz'
-    elif game.get('time_control') == '300':
-        tc = '5 min blitz'
-    elif game.get('time_control') == '600':
-        tc = '10 min rapid'
-    elif game.get('time_control') == '900':
-        tc = '15 min rapid'
-    elif game.get('time_control') == '1800':
-        tc = '30 min rapid'
-    elif game.get('time_control') == '1/259200':
-        tc = '3 day'
+
+    if match:
+        base_time, increment = match.groups()  # Extract the two parts
+
+        print(f"base_time: {base_time}, increment: {increment}")
+        
+        if base_time == '30':
+            tc = '30 sec bullet'
+        elif base_time == '60':
+            tc = '1 min bullet'
+        elif base_time == '180':
+            tc = '3 min blitz'
+        elif base_time == '300':
+            tc = '5 min blitz'
+        elif base_time == '600':
+            tc = '10 min rapid'
+        elif base_time == '900':
+            tc = '15 min rapid'
+        elif base_time == '1800':
+            tc = '30 min rapid'
+        elif base_time == '1/259200':
+            tc = '3 day'
+        
+        if increment is not None:
+            tc += f" +{increment}"  
 
     row_data['Time control'] = tc
     row_data['Winner'] = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
