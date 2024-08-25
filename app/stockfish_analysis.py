@@ -110,5 +110,6 @@ if __name__ == "__main__":
     with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
 
-    game_id = "72ef41ac-b62c-11e4-82cc-00000001000b" # Enter a game_id here if you want to run manually
+    # Analyzing with Stockfish is built to run using Airflow webserver. Enter a game_id here if you want to run manually
+    game_id = "72ef41ac-b62c-11e4-82cc-00000001000b" 
     asyncio.run(analyze_wdl_with_stockfish(game_id, **config))
