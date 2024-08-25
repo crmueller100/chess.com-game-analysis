@@ -1,10 +1,14 @@
 import os
 import json
 import pymongo
+from datetime import datetime
+
 from pymongo.errors import DuplicateKeyError
 from pprint import pprint
 
-from datetime import datetime
+import chess.pgn 
+import io
+from eco_code_mappings import eco_code_mappings
 
 def get_latest_game_in_database(client, db, collection, player):
     latest_month = collection.find_one({'player': player.lower()}, sort=[('month', pymongo.DESCENDING)], projection={"month": 1})
@@ -40,8 +44,25 @@ def insert_games_into_mongo(client, db, collection, player):
                         for game in games: # game type is <class 'dict'>
                             try:
                                 if game.get("rules") == "chess": # Don't want to include other variants (bughouse, kingofthehill, 3check, etc...)
+
+                                    # lookup the opening
+                                    pgn = game.get("pgn")
+                                    pgn_game = chess.pgn.read_game(io.StringIO(pgn))
+                                    eco_code = pgn_game.headers.get('ECO')
+                                    if eco_code:
+                                        eco_opening = eco_code_mappings.get(eco_code, "Code does not exist")
+                                        eco_opening_general = eco_opening.split(",")[0]  # Get the opening without the variant
+                                    else:
+                                        eco_opening = "ECO Code Missing"
+                                        eco_opening_general = "ECO Code Missing"
+
                                     # The URL will be the default unique identifier (_id). Could use the UUID with collection.insert_one({"_id": game["uuid"], **game}) 
-                                    collection.insert_one({"_id": game["uuid"], "player": player.lower(), "month": yyyy_mm, **game}) 
+                                    collection.insert_one({"_id": game["uuid"],
+                                                            "player": player.lower(),
+                                                            "month": yyyy_mm,
+                                                            "eco_opening": eco_opening,
+                                                            "eco_opening_general": eco_opening_general,
+                                                            **game}) 
                                     # print(f"Inserted yyyy_mm {yyyy_mm} for player {player}")
                                     insert_count += 1
                             except DuplicateKeyError:
