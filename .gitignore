@@ -1,12 +1,11 @@
 # Set env variables
 .env
 
-# used virtual environment to create the requirements.txt
+# used a virtual environment to install the requirements.txt
 /env
 .DS_Store
 data/*
 analysis.ipynb
-mongo_data/*
 !.gitkeep
 __pycache__/
 TODOs.txt
