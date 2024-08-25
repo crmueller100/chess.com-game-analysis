@@ -44,7 +44,7 @@ if date_end:
 games = display_100_games(collection, player1, player2, time_class, date_begin, date_end)
 
 table_data = []
-keys_to_display = ["_id", "url", "player_expectation", "num_blunders","num_mistakes","num_inaccurcies"]
+keys_to_display = ["_id", "url", "player", "player_expectation", "num_blunders","num_mistakes","num_inaccurcies"]
 
 # Extract values for the specified keys from each game document
 for game in games:
