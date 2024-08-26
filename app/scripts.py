@@ -25,6 +25,13 @@ def query_game():
     results = collection.find_one({'eco_opening': {'$eq': None}})
     pprint(results)
 
+def delete_games():    
+    client, db, collection  = connect_to_mongo()
+
+    # results = collection.find_one({"_id": "f258e012-aaf5-11e3-8088-00000001000b"})
+    results = collection.delete_many({'player': 'hikaru', 'month': '2024-08'})
+    pprint(results)
+
 def update_all_player_history_with_eco_codes():    
     # Connect to MongoDB
     client, db, collection  = connect_to_mongo()
@@ -58,5 +65,6 @@ def update_all_player_history_with_eco_codes():
     client.close() 
         
 if __name__ == "__main__":
-    query_game()
+    # query_game()
+    delete_games()
     # update_all_player_history_with_eco_codes()

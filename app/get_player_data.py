@@ -77,7 +77,12 @@ def save_player_game_archives(player, game_archives, **kwargs):
             files_with_dates.append((file, match.group(1), match.group(2)))
 
     files_with_dates.sort(key=lambda x: (x[1], x[2]), reverse=True) # in the format [('2014_03.json', '2014', '03'), ('2014_02.json', '2014', '02'), ...]
-    latest_file = files_with_dates[0][0] # This is the latest file. It's in the format of 'YYYY_MM.json'. We'll match it with all months to see which is the latest
+
+    # If you're pulling data from a new player, there will be no files_with_dates. This handles that case
+    if files_with_dates:
+        latest_file = files_with_dates[0][0] # This is the latest file. It's in the format of 'YYYY_MM.json'. We'll match it with all months to see which is the latest
+    else:
+        latest_file = None
 
     for game in game_archives['archives']:
         year = game.split('/')[-2]
@@ -89,7 +94,7 @@ def save_player_game_archives(player, game_archives, **kwargs):
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 games = response.json()
-                with open(os.path.join(player_directory,f"{year}_{month}.json"), "w") as f:
+                with open(os.path.join(player_directory, f"{year}_{month}.json"), "w") as f:
                     f.write(json.dumps(games, indent=2))
                     print(f"Saved {year}_{month}.json for {player}")
             else:
