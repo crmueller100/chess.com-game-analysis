@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 from time import strftime
 from dateutil.relativedelta import relativedelta
+import pandas as pd
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -73,6 +74,8 @@ count_detailed_time_controls = count_detailed_time_controls(collection, player, 
 
 rating_of_time_controls_over_time = rating_of_time_controls_over_time(collection, player, time_class, color, date)
 
+# TODO: Make the "eco_opening" argument a filter and change between "eco_opening" and "eco_opening_general"
+summary_of_all_eco_openings = summary_of_all_eco_openings(collection, player, time_class, color, date, "eco_opening")
 
 #########################################################
 # Create and save charts as figures
@@ -214,6 +217,17 @@ ratings_over_time_by_time_class.update_xaxes(title_text='Date', row=2, col=1)
 ratings_over_time_by_time_class.update_yaxes(title_text='Average Rating', row=1, col=1)
 ratings_over_time_by_time_class.update_yaxes(title_text='Number of Games', row=2, col=1)
 
+df_all_openings = pd.DataFrame(summary_of_all_eco_openings)
+df_all_openings = df_all_openings.rename(columns={
+    "_id": "Opening",
+    "percent_won": "% won",
+    "percent_draw": "% draw",
+    "percent_lost": "% lost",
+    })
+df_all_openings['% won'] = df_all_openings['% won'].apply(lambda x: f"{x:.1f}%")
+df_all_openings['% draw'] = df_all_openings['% draw'].apply(lambda x: f"{x:.1f}%")
+df_all_openings['% lost'] = df_all_openings['% lost'].apply(lambda x: f"{x:.1f}%")
+
 
 #########################################################
 # Assemble Dashboard
@@ -242,6 +256,6 @@ col1.plotly_chart(game_results_as_white)
 col2.plotly_chart(game_results_as_black)
 col3.plotly_chart(detailed_time_control_chart)
 
-
-
+st.subheader("Opening Details")
+st.dataframe(df_all_openings)
 # st.metric(label="Total Games Played", value=50)

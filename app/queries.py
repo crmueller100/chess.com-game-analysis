@@ -268,6 +268,73 @@ def rating_of_time_controls_over_time(collection, player, time_class, color, dat
     result = list(collection.aggregate(pipeline))
     return result
 
+def summary_of_all_eco_openings(collection, player, time_class=None, color=None, date=None, eco_opening="eco_opening"):
+    pipeline = [
+        {
+            "$match": {
+                f"player": {"$regex": player, "$options": "i"},
+                **({"time_class": time_class} if time_class else {}),
+                **({f"{color}.username": {"$regex": f"^{player}$", "$options": "i"}} if color else {}),
+                **({"end_time": {"$gte": date}} if date else {}),
+            }
+        },
+        {
+            "$group": {
+                "_id": f"${eco_opening}",
+                "total_games": {"$sum": 1},
+                "won": {
+                    "$sum": {
+                        "$cond": [
+                            {"$or": [
+                                {"$and": [{"$eq": ["$white.username", player]}, {"$in": ["$white.result", ["win"]]}]},
+                                {"$and": [{"$eq": ["$black.username", player]}, {"$in": ["$black.result", ["win"]]}]}
+                            ]},
+                            1,
+                            0
+                        ]
+                    }
+                },
+                "draw": {
+                    "$sum": {
+                        "$cond": [
+                            {"$or": [
+                                {"$and": [{"$eq": ["$white.username", player]}, {"$in": ["$white.result", ["50move","agreed","insufficient","repetition","stalemate","timevsinsufficient"]]}]},
+                                {"$and": [{"$eq": ["$black.username", player]}, {"$in": ["$black.result", ["50move","agreed","insufficient","repetition","stalemate","timevsinsufficient"]]}]}
+                            ]},
+                            1,
+                            0
+                        ]
+                    }
+                },
+                "lost": {
+                    "$sum": {
+                        "$cond": [
+                            {"$or": [
+                                {"$and": [{"$eq": ["$white.username", player]}, {"$in": ["$white.result", ["resigned","checkmated","timeout","abandoned"]]}]},
+                                {"$and": [{"$eq": ["$black.username", player]}, {"$in": ["$black.result", ["resigned","checkmated","timeout","abandoned"]]}]}
+                            ]},
+                            1,
+                            0
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "percent_won": {"$cond": [{"$gt": ["$total_games", 0]}, {"$multiply": [{"$divide": ["$won", "$total_games"]}, 100]}, 0]},
+                "percent_draw": {"$cond": [{"$gt": ["$total_games", 0]}, {"$multiply": [{"$divide": ["$draw", "$total_games"]}, 100]}, 0]},
+                "percent_lost": {"$cond": [{"$gt": ["$total_games", 0]}, {"$multiply": [{"$divide": ["$lost", "$total_games"]}, 100]}, 0]}
+            }
+        },
+        {
+            "$sort": {"total_games": pymongo.DESCENDING}  # Sort by total games in descending order
+        }
+    ]
+
+    result = list(collection.aggregate(pipeline))
+    return result
+
 
 #######################################################
 # Queries for Stockfish Analysis
