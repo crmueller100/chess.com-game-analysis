@@ -46,10 +46,10 @@ with DAG(
         op_kwargs={"player": "{{ params.player_username }}"},
         provide_context=True,  # Allows passing the task instance (ti) to the callable
     )
-    t4 = PythonOperator (
+    t4 = PythonOperator(
         task_id="load_data_to_mongo",
         python_callable=load_data_to_mongo_wrapper,
-        params={"player": "{{ params.player_username }}"},
+        op_kwargs={"player": "{{ params.player_username }}"},
         provide_context=True,
     )
 
