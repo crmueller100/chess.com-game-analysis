@@ -286,8 +286,8 @@ def summary_of_all_eco_openings(collection, player, time_class=None, color=None,
                     "$sum": {
                         "$cond": [
                             {"$or": [
-                                {"$and": [{"$eq": ["$white.username", player]}, {"$in": ["$white.result", ["win"]]}]},
-                                {"$and": [{"$eq": ["$black.username", player]}, {"$in": ["$black.result", ["win"]]}]}
+                                {"$and": [{"$eq": [{"$toLower": "$white.username"}, player]}, {"$in": ["$white.result", ["win"]]}]},
+                                {"$and": [{"$eq": [{"$toLower": "$black.username"}, player]}, {"$in": ["$black.result", ["win"]]}]}
                             ]},
                             1,
                             0
@@ -298,8 +298,8 @@ def summary_of_all_eco_openings(collection, player, time_class=None, color=None,
                     "$sum": {
                         "$cond": [
                             {"$or": [
-                                {"$and": [{"$eq": ["$white.username", player]}, {"$in": ["$white.result", ["50move","agreed","insufficient","repetition","stalemate","timevsinsufficient"]]}]},
-                                {"$and": [{"$eq": ["$black.username", player]}, {"$in": ["$black.result", ["50move","agreed","insufficient","repetition","stalemate","timevsinsufficient"]]}]}
+                                {"$and": [{"$eq": [{"$toLower": "$white.username"}, player]}, {"$in": ["$white.result", ["50move","agreed","insufficient","repetition","stalemate","timevsinsufficient"]]}]},
+                                {"$and": [{"$eq": [{"$toLower": "$black.username"}, player]}, {"$in": ["$black.result", ["50move","agreed","insufficient","repetition","stalemate","timevsinsufficient"]]}]}
                             ]},
                             1,
                             0
@@ -310,8 +310,8 @@ def summary_of_all_eco_openings(collection, player, time_class=None, color=None,
                     "$sum": {
                         "$cond": [
                             {"$or": [
-                                {"$and": [{"$eq": ["$white.username", player]}, {"$in": ["$white.result", ["resigned","checkmated","timeout","abandoned"]]}]},
-                                {"$and": [{"$eq": ["$black.username", player]}, {"$in": ["$black.result", ["resigned","checkmated","timeout","abandoned"]]}]}
+                                {"$and": [{"$eq": [{"$toLower": "$white.username"}, player]}, {"$in": ["$white.result", ["resigned","checkmated","timeout","abandoned"]]}]},
+                                {"$and": [{"$eq": [{"$toLower": "$black.username"}, player]}, {"$in": ["$black.result", ["resigned","checkmated","timeout","abandoned"]]}]}
                             ]},
                             1,
                             0
