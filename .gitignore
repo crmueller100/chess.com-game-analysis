@@ -1,7 +1,5 @@
 # Set env variables
 .env
-
-# used a virtual environment to install the requirements.txt
 /env
 .DS_Store
 data/*
@@ -12,6 +10,5 @@ TODOs.txt
 logs/
 plugins/
 test.py
-
-# This is where the stockfish engine is stored
+# This is the directory where the stockfish engine is saved
 stockfish/

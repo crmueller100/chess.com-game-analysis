@@ -1,6 +1,5 @@
 version: '3'
 
-
 # Configuration for the Airflow services was taken from here: https://airflow.apache.org/docs/apache-airflow/2.9.3/docker-compose.yaml
 x-airflow-common:
   &airflow-common
@@ -13,17 +12,17 @@ x-airflow-common:
     # AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    # AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-    # _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     _PIP_ADDITIONAL_REQUIREMENTS: "pymongo==4.7.3 requests==2.32.3 PyYAML==6.0.1 chess==1.10.0 asyncio==3.4.3"
+
     PYTHONPATH: /opt/airflow:/opt/airflow/app
     DATA_DIR: /opt/airflow/data
     STOCKFISH_PATH: /usr/local/bin/stockfish/stockfish-android-armv8
-
-    MONGO_HOST: my-mongodb
-    MONGO_PORT: 27017
+    
+    MONGO_HOST: ${MONGO_HOST}
+    MONGO_PORT: ${MONGO_PORT}
 
   volumes:
     - ./airflow/dags:/opt/airflow/dags
@@ -46,10 +45,10 @@ services:
   mongo:
     image: mongo:latest
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root} 
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-example} 
     ports:
-      - 27017:27017
+      - ${MONGO_PORT}:${MONGO_PORT}
     volumes:
       - ./data/mongo_data/:/data/db
     container_name: my-mongodb
@@ -63,8 +62,11 @@ services:
     depends_on:
       - mongo
     environment:
-      - MONGO_HOST=my-mongodb
-      - MONGO_PORT=27017
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-root} 
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-example} 
+
       - PYTHONPATH=/app:/dashboard
       - DATA_DIR=/data
     volumes:
@@ -84,8 +86,10 @@ services:
     depends_on:
       - app
     environment:
-      - MONGO_HOST=my-mongodb
-      - MONGO_PORT=27017
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-root} 
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-example} 
       - PYTHONPATH=/app:/dashboard
     volumes:
       - ./app:/app
@@ -98,9 +102,9 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${POSTGRES_USER:-airflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      POSTGRES_DB: ${POSTGRES_DB:-airflow}
     volumes:
       - ./data/postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
