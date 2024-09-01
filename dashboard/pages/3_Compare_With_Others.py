@@ -15,7 +15,7 @@ client, db, collection = connect_to_mongo()
 
 with st.sidebar:
     player = st.text_input("Enter player username:")
-    time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"]) # TODO: Eventually make it a multiselect (different data structure than single select): https://docs.streamlit.io/develop/api-reference/widgets/st.multiselect
+    time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"])
     color = st.radio("Color", ["All","White", "Black"]).lower()
     date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
 
