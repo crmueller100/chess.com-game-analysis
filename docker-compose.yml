@@ -21,6 +21,8 @@ x-airflow-common:
     DATA_DIR: /opt/airflow/data
     STOCKFISH_PATH: /usr/local/bin/stockfish/stockfish-android-armv8
     
+    MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root} 
+    MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-example} 
     MONGO_HOST: ${MONGO_HOST}
     MONGO_PORT: ${MONGO_PORT}
 
