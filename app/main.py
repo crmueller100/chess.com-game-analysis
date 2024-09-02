@@ -28,14 +28,22 @@ def main():
     get_player_data(player)
     
     # query the player's game history
-    game_archives = get_player_game_archives(player)
-    save_player_game_archives(player, game_archives, **config)
+    # game_archives = get_player_game_archives(player)
+    # save_player_game_archives(player, game_archives, **config)
 
     # Connect to MongoDB
     client, db, collection  = connect_to_mongo()
 
+    g = collection.find_one({'player': player})
+    # pprint(g)
+    import chess.pgn
+    import io
+    pgn = g['pgn']
+    test = chess.pgn.read_game(io.StringIO(pgn))
+    print(list(test.mainline_moves())[0])
+
     # load the data into MongoDB
-    insert_games_into_mongo(client, db, collection, player)
+    # insert_games_into_mongo(client, db, collection, player)
     
 
 if __name__ == "__main__":

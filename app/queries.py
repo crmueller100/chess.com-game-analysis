@@ -1,6 +1,7 @@
 import pymongo
 from pprint import pprint
 from datetime import datetime
+import chess.pgn 
 
 from connect_to_mongo import connect_to_mongo
 
@@ -335,6 +336,17 @@ def summary_of_all_eco_openings(collection, player, time_class=None, color=None,
     result = list(collection.aggregate(pipeline))
     return result
 
+def opening_move_win_loss_ratio(collection, player, time_class=None, color=None, date=None):
+    filter_query = { "player": player }
+    if time_class:
+        filter_query["time_class"] = time_class
+    if color:
+        filter_query[f"{color}.username"] = {"$regex": f"^{player}$", "$options": "i"}
+    if date:
+        filter_query["end_time"] = {"$gte": date}
+
+    return collection.find(filter_query)
+    
 
 #######################################################
 # Queries for Stockfish Analysis

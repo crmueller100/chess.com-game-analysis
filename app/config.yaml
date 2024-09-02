@@ -1,5 +1,5 @@
 # Set configurations for main.py
-username: hikaru
+username: cmuell
 refresh_entire_history: False # Almost always want this False. Only use if game archives get corrupted and need to be re-saved
 
 # Stockfish analysis parameters

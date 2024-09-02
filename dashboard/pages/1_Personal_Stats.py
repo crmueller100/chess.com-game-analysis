@@ -4,12 +4,14 @@ import time
 from time import strftime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
+import io 
 
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from collections import defaultdict
+import chess.pgn
 
 from queries import *
 
@@ -22,8 +24,8 @@ with st.sidebar:
     color = st.radio("Color", ["All","White", "Black"]).lower()
     date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
 
-# player = 'hikaru'
-# print('\n\n\n\n')
+player = 'hikaru'
+print('\n\n\n\n')
 
 if not player:
     st.error("Please enter a player username")
@@ -74,8 +76,8 @@ count_detailed_time_controls = count_detailed_time_controls(collection, player, 
 
 rating_of_time_controls_over_time = rating_of_time_controls_over_time(collection, player, time_class, color, date)
 
-# TODO: Make the "eco_opening" argument a filter and change between "eco_opening" and "eco_opening_general"
 summary_of_all_eco_openings = summary_of_all_eco_openings(collection, player, time_class, color, date, "eco_opening")
+opening_move_win_loss_ratio = opening_move_win_loss_ratio(collection, player, time_class, color, date)
 
 #########################################################
 # Create and save charts as figures
@@ -228,6 +230,15 @@ df_all_openings['% won'] = df_all_openings['% won'].apply(lambda x: f"{x:.1f}%")
 df_all_openings['% draw'] = df_all_openings['% draw'].apply(lambda x: f"{x:.1f}%")
 df_all_openings['% lost'] = df_all_openings['% lost'].apply(lambda x: f"{x:.1f}%")
 
+first_moves = []
+for game in opening_move_win_loss_ratio:
+    g = chess.pgn.read_game(io.StringIO(game['pgn']))
+    if list(g.mainline_moves()):
+        first_move = list(g.mainline_moves())[0]
+        first_moves.append(first_move.uci())
+        print(len(first_moves))
+        # break
+print(f"the first moves are {first_moves}")
 
 #########################################################
 # Assemble Dashboard
@@ -258,4 +269,3 @@ col3.plotly_chart(detailed_time_control_chart)
 
 st.subheader("Opening Details")
 st.dataframe(df_all_openings)
-# st.metric(label="Total Games Played", value=50)
