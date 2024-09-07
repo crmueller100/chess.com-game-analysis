@@ -390,7 +390,7 @@ def build_filter_query(collection, player=None, player2=None, time_class=None, d
 def display_100_games(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
     filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
     
-    return collection.find(filter_query).limit(100)
+    return collection.find(filter_query).sort("end_time", pymongo.DESCENDING).limit(100)
 
 def count_number_of_games_analyzed(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None, game_id=None):
     filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end, game_id)
