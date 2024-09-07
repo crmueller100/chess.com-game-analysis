@@ -337,10 +337,10 @@ def summary_of_all_eco_openings(collection, player, time_class=None, color=None,
 
 
 #######################################################
-# Queries for Stockfish Analysis
+# Queries for Stockfish Analysis and Game Explorer
 #######################################################
 
-def build_filter_query(collection, player=None, player2=None, time_class=None, date_start=None, date_end=None):
+def build_filter_query(collection, player=None, player2=None, time_class=None, date_start=None, date_end=None, game_id=None):
     filter_query = {}
 
     # Combine $or conditions for each player individually (if provided)
@@ -381,6 +381,9 @@ def build_filter_query(collection, player=None, player2=None, time_class=None, d
     if date_start and date_end:
         filter_query["end_time"] = {"$gte": date_start, "$lte": date_end}
 
+    if game_id:
+        filter_query["_id"] = game_id
+
     return filter_query
 
 
@@ -389,22 +392,15 @@ def display_100_games(collection, player1=None, player2=None, time_class=None, d
     
     return collection.find(filter_query).limit(100)
 
-def count_number_of_games_analyzed(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
-    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+def count_number_of_games_analyzed(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None, game_id=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end, game_id)
     filter_query["player_expectation"] = {"$exists": True}
 
     count = collection.count_documents(filter_query)
     return count
 
-def count_number_of_games_analyzed(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
-    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
-    filter_query["player_expectation"] = {"$exists": True}
-
-    count = collection.count_documents(filter_query)
-    return count
-
-def count_number_of_blunders(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
-    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+def count_number_of_blunders(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None, game_id=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end, game_id)
 
     pipeline = [
         {"$match": filter_query},
@@ -418,8 +414,8 @@ def count_number_of_blunders(collection, player1=None, player2=None, time_class=
     else:
         return 0
 
-def count_number_of_inaccuracies(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
-    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+def count_number_of_inaccuracies(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None, game_id=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end, game_id)
 
     pipeline = [
         {"$match": filter_query},
@@ -433,8 +429,8 @@ def count_number_of_inaccuracies(collection, player1=None, player2=None, time_cl
     else:
         return 0
 
-def count_number_of_mistakes(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None):
-    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end)
+def count_number_of_mistakes(collection, player1=None, player2=None, time_class=None, date_start=None, date_end=None, game_id=None):
+    filter_query = build_filter_query(collection, player1, player2, time_class, date_start, date_end, game_id)
 
     pipeline = [
         {"$match": filter_query},
