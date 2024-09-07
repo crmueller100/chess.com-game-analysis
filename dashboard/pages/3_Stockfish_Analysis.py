@@ -38,8 +38,6 @@ col4.metric(label="Number of Mistakes", value=number_of_mistakes)
 
 
 # Create the chart for player's expectation for single game
-game_id = '65cb888a-6804-11ef-a6d9-6cfe544c0428'
-
 if game_id:
     game = collection.find_one({"_id": game_id})
 
