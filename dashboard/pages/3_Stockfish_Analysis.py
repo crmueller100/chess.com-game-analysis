@@ -45,7 +45,19 @@ if game_id:
         st.warning(f"Player expectation data not available for game_id: {game_id}. Trigger the analysis DAG in Airflow")
         st.stop()
     
-    st.header(f"Running analysis for game_id: {game_id}")
+    st.header(f"Running analysis on player {game['player']}")
+    st.text(f"Game ID: {game_id}")
+    
+    white = game.get('white', {}).get('username')
+    black = game.get('black', {}).get('username')
+
+    winner = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
+    st.text(f"White: {white}")
+    st.text(f"Black: {black}")
+    st.text(f"Winner: {winner}")
+
+
+
     player_expectation = game['player_expectation']
     move_numbers = list(range(1, len(player_expectation) + 1))
 
