@@ -38,6 +38,8 @@ col4.metric(label="Number of Mistakes", value=number_of_mistakes)
 
 
 # Create the chart for player's expectation for single game
+game_id = '65cb888a-6804-11ef-a6d9-6cfe544c0428'
+
 if game_id:
     game = collection.find_one({"_id": game_id})
 
@@ -46,17 +48,17 @@ if game_id:
         st.stop()
     
     st.header(f"Running analysis on player {game['player']}")
-    st.text(f"Game ID: {game_id}")
+
+    col1, col2 = st.columns(2)
+    winner = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
+    col1.text(f"Winner: {winner}")
+    col2.text(f"Game ID: {game_id}")
     
     white = game.get('white', {}).get('username')
     black = game.get('black', {}).get('username')
 
-    winner = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
     st.text(f"White: {white}")
     st.text(f"Black: {black}")
-    st.text(f"Winner: {winner}")
-
-
 
     player_expectation = game['player_expectation']
     move_numbers = list(range(1, len(player_expectation) + 1))
