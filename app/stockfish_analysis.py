@@ -53,12 +53,22 @@ async def analyze_wdl_with_stockfish(game_id, **config) -> None:
     white_expectation = []
     black_expectation = []
 
+    # Need to analyze the position after the player's move, not every single board position, so we assign the expecation to each color in an alternating fashion. Start with white
+    color_to_move = 'white'
+
     print("Analyzing game...")
     for move in game.mainline_moves():
+        
         info = await engine.analyse(board, chess.engine.Limit(time=stockfish_time_limit))
 
-        white_expectation.append(round(float(info["score"].white().wdl().expectation()), 2))
-        black_expectation.append(round(float(info["score"].black().wdl().expectation()), 2))
+        if color_to_move == 'white':
+            white_expectation.append(round(float(info["score"].white().wdl().expectation()), 2))
+            color_to_move = 'black'
+        elif color_to_move == 'black':
+            black_expectation.append(round(float(info["score"].black().wdl().expectation()), 2))
+            color_to_move = 'white'
+        else:
+            raise Exception("Invalid color_to_move")
 
         board.push(move)
     await engine.quit()
@@ -84,7 +94,8 @@ async def analyze_wdl_with_stockfish(game_id, **config) -> None:
     num_inaccuracies = 0
 
     for i in range(1, len(player_expectation)):
-        wdl_change = player_expectation[i] - player_expectation[i-1]
+        # check if the player's expectation has decreased by a certain threshold
+        wdl_change = player_expectation[i-1] - player_expectation[i]
 
         if wdl_change >= wdl_blunder_threshold:
             num_blunders +=1 
@@ -100,7 +111,7 @@ async def analyze_wdl_with_stockfish(game_id, **config) -> None:
             "num_inaccuracies": num_inaccuracies
             }
         }
-
+    print(f"update_operation: {update_operation}")
     result = collection.update_one(filter_query, update_operation, upsert=False) # uses same filter_query as above
 
     client.close()
