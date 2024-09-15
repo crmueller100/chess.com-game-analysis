@@ -9,6 +9,14 @@ import yaml
 import chess.pgn 
 from connect_to_mongo import connect_to_mongo
 
+
+def get_config():
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'config.yaml')
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
+    return config
+
+
 async def analyze_wdl_with_stockfish(game_id, **config) -> None:
     if game_id is None:
         print(f"Please enter a game_id and re-run.")
@@ -116,10 +124,25 @@ async def analyze_wdl_with_stockfish(game_id, **config) -> None:
 
     client.close()
 
+
+async def analyze_wdl_with_stockfish_last_n_games(player, num_games):
+    client, db, collection  = connect_to_mongo()
+    games = collection.find({'player': player, "player_expectation": {"$exists": False} }).sort('end_time', -1).limit(num_games)
+
+    config = get_config()
+    analysis_tasks = []  # List to store coroutines
+    for g in games:
+        game_id = g['_id']
+        analysis_tasks.append(analyze_wdl_with_stockfish(game_id, **config))  # Append coroutine to the list
+
+    # Run all analysis tasks concurrently
+    await asyncio.gather(*analysis_tasks)
+
+    client.close()
+
+
 if __name__ == "__main__":
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'config.yaml')
-    with open(config_path, 'r') as file:
-        config = yaml.safe_load(file)
+    config = get_config()
 
     # Analyzing with Stockfish is built to run using Airflow webserver. Enter a game_id here if you want to run manually
     game_id = "72ef41ac-b62c-11e4-82cc-00000001000b" 
