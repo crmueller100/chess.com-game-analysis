@@ -74,6 +74,7 @@ if game_id:
         xaxis_title='Move Number',
         yaxis_title='Win/Loss/Draw Expectation',
         title='Player Expectation Over Time',
+        yaxis=dict(range=[0, 1.01]) # Using upper bound of 1 cuts off top of line. Adding 0.01 to upper bound shows the full line
     )
 
     st.plotly_chart(fig)
