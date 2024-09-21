@@ -55,8 +55,14 @@ if game_id:
     white = game.get('white', {}).get('username')
     black = game.get('black', {}).get('username')
 
-    st.text(f"White: {white}")
-    st.text(f"Black: {black}")
+    # TODO: Add ratings to the colors
+    col1, col2 = st.columns(2)
+    col1.text(f"White: {white}")
+    col2.text(f"Rating: {game.get('white', {}).get('rating')}")
+    
+    col1, col2 = st.columns(2)
+    col1.text(f"Black: {black}")
+    col2.text(f"Rating: {game.get('black', {}).get('rating')}")
 
     player_expectation = game['player_expectation']
     move_numbers = list(range(1, len(player_expectation) + 1))
