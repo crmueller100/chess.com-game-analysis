@@ -83,7 +83,7 @@ summary_of_all_eco_openings = summary_of_all_eco_openings(collection, player, ti
 
 raw_labels_white = [doc["_id"] for doc in results_as_white]
 casted_labels_white = ['lose' if doc['_id'] in('resigned','checkmated','timeout','abandoned') 
-          else "draw" if doc["_id"] in ('agreed','repetition','insufficient','stalemate','timevsinsufficient') 
+          else "draw" if doc["_id"] in ('agreed','repetition','insufficient','stalemate','timevsinsufficient','50move') 
           else doc["_id"] for doc in results_as_white]
 
 values_white = [doc['count'] for doc in results_as_white]
@@ -104,7 +104,7 @@ game_results_as_white = px.pie(
 raw_labels_black = [doc["_id"] for doc in results_as_black]
 
 casted_labels_black = ['lose' if doc['_id'] in('resigned','checkmated','timeout','abandoned') 
-          else "draw" if doc["_id"] in ('agreed','repetition','insufficient','stalemate','timevsinsufficient') 
+          else "draw" if doc["_id"] in ('agreed','repetition','insufficient','stalemate','timevsinsufficient','50move') 
           else doc["_id"] for doc in results_as_black]
 
 values_black = [doc['count'] for doc in results_as_black]
