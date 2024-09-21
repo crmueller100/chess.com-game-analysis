@@ -36,10 +36,11 @@ col3.metric(label="Number of Inaccuracies", value=number_of_inaccuracies)
 number_of_mistakes = count_number_of_mistakes(collection, None, None, None, None, None, game_id)
 col4.metric(label="Number of Mistakes", value=number_of_mistakes)
 
-
+game_id = '7ffdcff1-745f-11ef-96c6-6cfe544c0428'
 # Create the chart for player's expectation for single game
 if game_id:
     game = collection.find_one({"_id": game_id})
+    
 
     if not game.get('player_expectation'):
         st.warning(f"Player expectation data not available for game_id: {game_id}. Trigger the analysis DAG in Airflow")
@@ -49,19 +50,19 @@ if game_id:
 
     col1, col2 = st.columns(2)
     winner = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
+
     col1.text(f"Winner: {winner}")
     col2.text(f"Game ID: {game_id}")
     
     white = game.get('white', {}).get('username')
     black = game.get('black', {}).get('username')
 
-    # TODO: Add ratings to the colors
     col1, col2 = st.columns(2)
-    col1.text(f"White: {white}")
+    col1.text(f"White: {white} ({game.get('white', {}).get('result')})")
     col2.text(f"Rating: {game.get('white', {}).get('rating')}")
     
     col1, col2 = st.columns(2)
-    col1.text(f"Black: {black}")
+    col1.text(f"Black: {black} ({game.get('black', {}).get('result')})")
     col2.text(f"Rating: {game.get('black', {}).get('rating')}")
 
     player_expectation = game['player_expectation']
