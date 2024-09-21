@@ -23,7 +23,7 @@ with DAG(
     schedule_interval=None,  # This DAG will be triggered manually, not on a schedule
     params={
         "player_username": Param(default="hikaru", type="string", title="Enter in a player's username"),
-        "num_games": Param(default=None, type="integer", maximum=10, title="Enter the number of games to analyze. Maximum of 10 games per run")
+        "num_games": Param(default=None, type="integer", maximum=15, title="Enter the number of games to analyze. Maximum of 15 games per run")
     },
 ) as dag:
     print('this is the dAGs')
