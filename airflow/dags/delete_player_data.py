@@ -12,6 +12,7 @@ def delete_player_data(player):
     client, db, collection = connect_to_mongo()
     result = collection.delete_many({"player": player})
     print(f"Deleted {result.deleted_count} games for {player}")
+    # We don't need to delete the data from the local storage
 
 
 with DAG(
