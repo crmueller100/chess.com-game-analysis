@@ -30,11 +30,12 @@ col1.metric(label="Games Analyzed by Stockfish", value=number_of_games_analyzed)
 number_of_blunders = count_number_of_blunders(collection, None, None, None, None, None, game_id)
 col2.metric(label="Number of Blunders", value=number_of_blunders)
 
-number_of_inaccuracies = count_number_of_inaccuracies(collection, None, None, None, None, None, game_id)
-col3.metric(label="Number of Inaccuracies", value=number_of_inaccuracies)
-
 number_of_mistakes = count_number_of_mistakes(collection, None, None, None, None, None, game_id)
-col4.metric(label="Number of Mistakes", value=number_of_mistakes)
+col3.metric(label="Number of Mistakes", value=number_of_mistakes)
+
+number_of_inaccuracies = count_number_of_inaccuracies(collection, None, None, None, None, None, game_id)
+col4.metric(label="Number of Inaccuracies", value=number_of_inaccuracies)
+
 
 # Create the chart for player's expectation for single game
 if game_id:
