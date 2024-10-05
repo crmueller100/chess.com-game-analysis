@@ -26,7 +26,6 @@ with DAG(
         "num_games": Param(default=None, type="integer", maximum=15, title="Enter the number of games to analyze. Maximum of 15 games per run")
     },
 ) as dag:
-    print('this is the dAGs')
     t1 = PythonOperator(
         task_id="call_stockfish_analysis",
         python_callable=analyze_wdl_wrapper
