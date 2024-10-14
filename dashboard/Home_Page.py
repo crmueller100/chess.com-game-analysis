@@ -5,7 +5,7 @@ st.set_page_config(
     page_icon=":chess_pawn:",
     layout="wide"
 )
-st.title("Welcome to my Chess Analysis Dashboard!")  # More prominent title
+st.title("Welcome to my Chess Analysis Dashboard!")
 
 st.sidebar.success("Select a dashboard above.")
 
@@ -13,14 +13,13 @@ st.markdown(
     """
     This interactive dashboard empowers you to dive into your [chess.com](https://chess.com/) game history, providing a comprehensive analysis of your performance.
     
-    **Key Features:**
+    Select from any of **3 Dashboards** to explore:
 
-    * **Personal Stats:** Gain insights into your personal performance and game outcomes.
-    * **Compare With Others:** Benchmark your skills against other players, including grandmasters.
-    * **Track Your Progress:** Visualize your rating trends and improvement over time.
-    * **Discover Your Strengths and Weaknesses:** Identify patterns in your openings, tactics, and endgames.
+    * **Personal Stats:** Uncover insights into your personal performance and track your progress over time.
+    * **Game Explorer:** Browse all games stored in the local database. 
+    * **Stockfish Analysis:** Want a deep dive into your games? Pull the `game_id` from the Game Explorer, submit it to an Airflow job, and run a Stockfish analysis on your game.
 
-    To get started, navigate through the dashboards using the sidebar on the left.
+    To get started, navigate to each dashboard using the sidebar on the left.
 
     This app is powered by [Streamlit](https://streamlit.io/) and the [chess.com API](https://www.chess.com/news/view/published-data-api).
     """
