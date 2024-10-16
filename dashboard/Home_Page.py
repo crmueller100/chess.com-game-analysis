@@ -21,6 +21,6 @@ st.markdown(
 
     To get started, navigate to each dashboard using the sidebar on the left.
 
-    This app is powered by [Streamlit](https://streamlit.io/) and the [chess.com API](https://www.chess.com/news/view/published-data-api).
+    This dashboard is powered by [Streamlit](https://streamlit.io/). The game data is from [chess.com API](https://www.chess.com/news/view/published-data-api).
     """
 )

@@ -20,10 +20,7 @@ with st.sidebar:
     player = st.text_input("Enter player username:")
     time_class = st.selectbox("Time Control", ["All","bullet", "blitz", "rapid", "daily"])
     color = st.radio("Color", ["All","White", "Black"]).lower()
-    date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1))
-
-# player = 'hikaru'
-# print('\n\n\n\n')
+    date = st.date_input('Start Date', value=None, min_value=datetime(2005,1,1)) # set a min date just before chess.com was founded
 
 if not player:
     st.error("Please enter a player username")
@@ -51,7 +48,7 @@ if date:
 
 
 #########################################################
-# Query Mongo and collect all the data
+# Query Mongo and display the data
 #########################################################
 
 current_month = datetime.now().strftime('%Y_%m')
@@ -74,7 +71,6 @@ count_detailed_time_controls = count_detailed_time_controls(collection, player, 
 
 rating_of_time_controls_over_time = rating_of_time_controls_over_time(collection, player, time_class, color, date)
 
-# TODO: Make the "eco_opening" argument a filter and change between "eco_opening" and "eco_opening_general"
 summary_of_all_eco_openings = summary_of_all_eco_openings(collection, player, time_class, color, date, "eco_opening")
 
 #########################################################
