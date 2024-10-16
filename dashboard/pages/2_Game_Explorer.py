@@ -105,3 +105,30 @@ else:
     st.stop()
 
 st.dataframe(df)
+
+
+games = list(collection.find({}, {'player': 1, 'end_time': 1}))
+
+# Process the data
+if games:
+    df = pd.DataFrame(games)
+    df['end_time'] = df['end_time']
+    print(df.head())
+
+    # Group by player and calculate the number of games and the most recent game
+    player_stats = df.groupby('player').agg(
+        number_of_games=('player', 'size'),
+        most_recent_game=('end_time', 'max')
+    ).reset_index()
+
+    # Convert the most recent game timestamp to a human-readable date
+    player_stats['most_recent_game'] = pd.to_datetime(player_stats['most_recent_game'], unit='s')
+    
+    st.subheader("Player Metadata")
+    st.dataframe(player_stats)
+else:
+    st.error("No games found in the database.")
+    st.stop()
+
+# player_games = df['player'].value_counts()
+# st.dataframe(player_games)

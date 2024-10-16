@@ -19,7 +19,7 @@ x-airflow-common:
 
     PYTHONPATH: /opt/airflow:/opt/airflow/app
     DATA_DIR: /opt/airflow/data
-    STOCKFISH_PATH: ${STOCKFISH_PATH}
+    STOCKFISH_PATH: ${STOCKFISH_PATH:-/usr/local/bin/stockfish/stockfish-android-armv8}
     
     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root} 
     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-example} 
