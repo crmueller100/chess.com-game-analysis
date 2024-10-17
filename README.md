@@ -92,13 +92,29 @@ If you want to enter the `app` container to run specific files and functions, us
 ```
 docker exec -it <python_container_id> bash
 ```
-Then you can simply run `python main.py`
+Then you can simply run `python main.py`.
 
-### Initialize Mongo DB
+### Initialize MongoDB
 Once inside the `app` container, you'll need to initialize MongoDB. This only needs to be done once. Run the following command:
 ```
 python mongo_init.py
 ```
 
 ### Opening Analysis
-Chess.com returns games as a PGN (portable game notation) format. The codes that represent each opening identified in the PGN were mapped using [ECO mappings](https://www.365chess.com/eco.php). 
+Chess.com returns games as a PGN (Portable Game Notation) format. The codes that represent each opening identified in the PGN were mapped using [ECO mappings](https://www.365chess.com/eco.php). 
+
+# Screenshots
+
+This section contains screenshots from the application that illustrate what the user experience is like.
+
+### Personal Stats
+Dive into your personal game history and analyze your performance with the help of the filters on the left side of the screen. Performance can be broken out by time control, color, date, opening, and more!
+![personal_stats](fig/gif_of_personal_stats_page.gif)
+
+### Airflow
+There are several jobs in Airflow that you can use to augment your data exploration experience. For example, use the DAG pictured below to pull or refresh a player's game data, and load it into Mongo where it will be instantly available in the dashboards.
+![airflow_player_dag](fig/airflow_player_dag.png)
+
+### Stockfish Analysis
+Analyze a single game's performance. See how your likelihood to win changes over the course of the game, and Stockfish will tell you where you made errors as well as how severe they were.
+![stockfish_dashboard](fig/stockfish_dashboard.png)
