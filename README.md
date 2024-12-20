@@ -37,7 +37,7 @@ This application uses chess.com's public API for to query data about players' ga
 With the setup complete, you can:
 * Explore the dashboard by going to http://localhost:8501/
 * Trigger jobs through the Airflow UI by going to http://localhost:8080/
-* Run custom functions within the `app` container by running `python <some_file.py>
+* Run custom functions within the `app` container by running `python <some_file.py>`
 
 
 # Technical Documentation
