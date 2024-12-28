@@ -1,10 +1,19 @@
-# Set configurations for main.py
-username: hikaru
-refresh_entire_history: False # Almost always want this False. Only use if game archives get corrupted and need to be re-saved
-
 # Stockfish analysis parameters
 stockfish_time_limit: 0.1  # Don't set the time parameter smaller than 0.1. It doesn't give the engine enough time to calculate the next moves
 overwrite_stockfish_analysis: False
 wdl_blunder_threshold: 0.5
 wdl_mistake_threshold: 0.2
 wdl_inaccuracy_threshold: 0.1
+
+# Set configurations for main.py
+pull_player_data:
+  - hikaru
+  - magnuscarlsen
+  - cmuell
+  - firouzja2003
+  - nihalsarin
+  - gmwso
+  - denlaz
+  - anishgiri
+  - danielnaroditsky
+  - penguingm1
