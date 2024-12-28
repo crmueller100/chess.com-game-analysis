@@ -11,7 +11,7 @@ def analyze_wdl_wrapper(**kwargs):
     """
     Wrapper function to execute the async analyze_wdl_with_stockfish function.
     """
-    print(f'running analyze_wdl_wrapper with kwaregs: {kwargs}')
+    print(f'running analyze_wdl_wrapper with kwargs: {kwargs}')
     player = kwargs["params"]["player_username"]
     num_games = kwargs["params"]["num_games"]
     asyncio.run(analyze_wdl_with_stockfish_last_n_games(player, num_games))

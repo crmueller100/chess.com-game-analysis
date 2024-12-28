@@ -78,7 +78,14 @@ for game in games:
             tc += f" +{increment}"  
 
     row_data['Time control'] = tc
-    row_data['Winner'] = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
+    # row_data['Winner'] = game.get('white', {}).get('username') if game.get('white', {}).get('result') == 'win' else game.get('black', {}).get('username')
+    if game.get('white', {}).get('result') == 'win':
+        row_data['Winner'] = 'White'
+    elif game.get('black', {}).get('result') == 'win':
+        row_data['Winner'] = 'Black'
+    else:
+        row_data['Winner'] = 'draw'
+
     row_data['White'] = game.get('white', {}).get('username')
     row_data['White Rating'] = game.get('white', {}).get('rating')
     row_data['Black'] = game.get('black', {}).get('username')
