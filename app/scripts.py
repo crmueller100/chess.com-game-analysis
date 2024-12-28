@@ -64,7 +64,18 @@ def update_all_player_history_with_eco_codes():
 
     client.close() 
         
+def adhoc():    
+    client, db, collection  = connect_to_mongo()
+
+    # results = collection.find({'eco_opening': {'$eq': None}})
+    total_documents = collection.count_documents({})  
+    print(f"Total documents in the collection: {total_documents}")
+
+    client.close() 
+
 if __name__ == "__main__":
     # query_game()
-    delete_games()
+    # delete_games()
     # update_all_player_history_with_eco_codes()
+
+    adhoc()
