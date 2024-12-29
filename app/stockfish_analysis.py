@@ -51,7 +51,7 @@ async def analyze_wdl_with_stockfish(game_id, **config) -> None:
 
     game = chess.pgn.read_game(io.StringIO(pgn))  
 
-    STOCKFISH_PATH = os.getenv("STOCKFISH_PATH")
+    STOCKFISH_PATH = os.environ.get("STOCKFISH_PATH")
 
     print(f"Using STOCKFISH_PATH: {STOCKFISH_PATH}")
     transport, engine = await chess.engine.popen_uci(STOCKFISH_PATH)

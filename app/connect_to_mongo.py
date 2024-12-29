@@ -7,10 +7,10 @@ def connect_to_mongo():
     print(f"Connecting to MongoDB")
     try:
         # Define MongoDB connection parameters
-        username = os.getenv("MONGO_INITDB_ROOT_USERNAME")
-        password = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
-        host = os.getenv("MONGO_HOST")
-        port = os.getenv("MONGO_PORT")
+        username = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
+        password = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
+        host = os.environ.get("MONGO_HOST")
+        port = os.environ.get("MONGO_PORT")
 
         connection_string = f"mongodb://{username}:{password}@{host}:{port}"
 

@@ -17,7 +17,7 @@ def get_latest_game_in_database(client, db, collection, player):
     return latest_month['month']
 
 def insert_games_into_mongo(client, db, collection, player):
-    data_dir = os.getenv("DATA_DIR", "../data")
+    data_dir = os.environ.get("DATA_DIR", "../data")
     player_directory = os.path.join(data_dir, f"game_archives/{player}")
 
     latest_month = get_latest_game_in_database(client, db, collection, player) # formated as YYYY_MM

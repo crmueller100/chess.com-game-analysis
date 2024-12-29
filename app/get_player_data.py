@@ -60,7 +60,7 @@ def save_player_game_archives(player, game_archives, **kwargs):
     # e.g. If we pull data on July 15th, then don't run the script until August, then July will only have half its data.
     # So we need to determine the LATEST month we have stored for each player and pull that + all future months.
 
-    data_dir = os.getenv("DATA_DIR", "../data")
+    data_dir = os.environ.get("DATA_DIR", "../data")
     player_directory = os.path.join(data_dir, f"game_archives/{player}")
 
     os.makedirs(player_directory, exist_ok=True)
