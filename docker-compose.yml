@@ -61,6 +61,7 @@ services:
     build:
       context: .
       dockerfile: app/Dockerfile
+    image: ${DOCKER_IMAGE_APP:-chess-app-app:latest}
     depends_on:
       - mongo
     environment:
@@ -83,6 +84,7 @@ services:
     build:
       context: .
       dockerfile: dashboard/Dockerfile
+    image: ${DOCKER_IMAGE_DASHBOARD:-chess-app-dashboard:latest}
     ports:
       - 8501:8501
     depends_on:
