@@ -103,12 +103,12 @@ services:
     networks:
       - my-network
   
-  spark:
-    build: ./app/spark
-    environment:
-      SPARK_MASTER_HOST: spark-master
-    networks:
-      - my-network
+  # spark:
+  #   build: ./app/spark
+  #   environment:
+  #     SPARK_MASTER_HOST: spark-master
+  #   networks:
+  #     - my-network
   
   postgres:
     image: postgres:13
