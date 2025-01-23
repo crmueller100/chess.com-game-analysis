@@ -57,29 +57,6 @@ services:
     networks:
       - my-network
 
-  app:
-    build:
-      context: .
-      dockerfile: app/Dockerfile
-    image: ${DOCKER_IMAGE_APP:-chess-app-app:latest}
-    depends_on:
-      - mongo
-    environment:
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_PORT=${MONGO_PORT}
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-root} 
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-example} 
-
-      - PYTHONPATH=/app:/dashboard
-      - DATA_DIR=/data
-    volumes:
-      - ./app:/app
-      - ./dashboard:/dashboard
-      - ./data:/data
-      - ./stockfish:/usr/local/bin/stockfish
-    networks:
-      - my-network
-
   dashboard:
     build:
       context: .
@@ -87,8 +64,6 @@ services:
     image: ${DOCKER_IMAGE_DASHBOARD:-chess-app-dashboard:latest}
     ports:
       - 8501:8501
-    depends_on:
-      - app
     environment:
       - MONGO_HOST=${MONGO_HOST}
       - MONGO_PORT=${MONGO_PORT}
