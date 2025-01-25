@@ -4,15 +4,30 @@ import pymongo
 from pymongo.errors import ConnectionFailure, OperationFailure, ConfigurationError
 
 def connect_to_mongo():
-    print(f"Connecting to MongoDB")
-    try:
-        # Define MongoDB connection parameters
-        username = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
-        password = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
-        host = os.environ.get("MONGO_HOST")
-        port = os.environ.get("MONGO_PORT")
+    environment = os.environ.get("ENVIRONMENT", "local")
+    print(f"Connecting to MongoDB in {environment} environment")
 
-        connection_string = f"mongodb://{username}:{password}@{host}:{port}"
+    try:
+        if environment == "local":
+            username = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
+            password = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
+            host = os.environ.get("MONGO_HOST")
+            port = os.environ.get("MONGO_PORT")
+
+            connection_string = f"mongodb://{username}:{password}@{host}:{port}"
+
+        elif environment == "cloud":
+            username = os.environ.get("DOCDB_USERNAME")
+            password = os.environ.get("DOCDB_PASSWORD")
+            host = os.environ.get("DOCDB_HOST")
+            port = os.environ.get("DOCDB_PORT", "27017")  # Default port for DocumentDB
+            tls = os.environ.get("DOCDB_TLS", "true")
+
+            # Enable TLS/SSL for DocumentDB
+            connection_string = f"mongodb://{username}:{password}@{host}:{port}/?tls={tls}"
+
+        else:
+            raise ValueError("Invalid ENVIRONMENT value. Use 'local' or 'cloud'.")
 
         # Establish connection to MongoDB
         client = pymongo.MongoClient(connection_string)
