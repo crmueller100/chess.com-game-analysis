@@ -22,9 +22,12 @@ def connect_to_mongo():
             host = os.environ.get("DOCDB_HOST")
             port = os.environ.get("DOCDB_PORT", "27017")  # Default port for DocumentDB
             tls = os.environ.get("DOCDB_TLS", "true")
+    
+            ssl_cert_path = os.environ.get("SSL_CERT_PATH", "/usr/local/share/ca-certificates/global-bundle.pem")
 
             # Enable TLS/SSL for DocumentDB
-            connection_string = f"mongodb://{username}:{password}@{host}:{port}/?tls={tls}"
+            connection_string = f"mongodb://{username}:{password}@{host}:{port}/?tls={tls}&tlsCAFile={ssl_cert_path}"
+
 
         else:
             raise ValueError("Invalid ENVIRONMENT value. Use 'local' or 'cloud'.")

@@ -12,3 +12,6 @@ plugins/
 test.py
 # This is the directory where the stockfish engine is saved
 stockfish/
+
+# SSL certification. Need it to exist in ECS to allow communication with DocumentDB 
+global-bundle.pem

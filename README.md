@@ -118,3 +118,9 @@ There are several jobs in Airflow that you can use to augment your data explorat
 ### Stockfish Analysis
 Analyze a single game's performance. See how your likelihood to win changes over the course of the game, and Stockfish will tell you where you made errors as well as how severe they were.
 ![stockfish_dashboard](fig/stockfish_dashboard.png)
+
+
+### Steps to run in AWS
+You'll need to have a valid SSL certificate for ECS to query from DocumentDB. I put the `.pem` file in the `dashboard/` directory (sibling to the Dockerfile) and referenced its respective location in the Docker container when running `connect_to_mongo.py`
+
+As part of the AWS deployment, only the `dashboard` Docker container is pushed to ECR. Therefore, the `docker build` must be done in a specific way that references only that Dockerfile and rearranges the directory structure slightly. See `dashboard/Dockerfile` for the AWS comments.
