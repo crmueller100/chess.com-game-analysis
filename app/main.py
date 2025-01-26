@@ -33,6 +33,10 @@ def main():
     
     pull_player_data = config.get('pull_player_data', [])
 
+    # If you provide usernames as CLI args, process those instead of the config.yaml
+    if len(sys.argv) > 1:
+        pull_player_data = sys.argv[1:]
+
     for player in pull_player_data:
         process_player(player, config)  # Process each player
 
