@@ -121,6 +121,13 @@ Analyze a single game's performance. See how your likelihood to win changes over
 
 
 ### Steps to run in AWS
-You'll need to have a valid SSL certificate for ECS to query from DocumentDB. I put the `.pem` file in the `dashboard/` directory (sibling to the Dockerfile) and referenced its respective location in the Docker container when running `connect_to_mongo.py`
+Here is a diagram of the AWS Architecture. This was constructed through the AWS console, so there is no IaC setup available in this repository. Here's how it works:
 
-As part of the AWS deployment, only the `dashboard` Docker container is pushed to ECR. Therefore, the `docker build` must be done in a specific way that references only that Dockerfile and rearranges the directory structure slightly. See `dashboard/Dockerfile` for the AWS comments.
+- Connect to public subnet using IGW. I configured the inbound rules to accept traffic from my IP address only. Open HTTP/HTTPS traffic to `0.0.0.0/0` if you want the public to be able to access it. I did not want that, so it's accessible by my machine only.
+- Upon starting the ECS task, it will pull the Docker image which is stored in ECR.
+- Once the ECS cluster is running, the Streamlit dashboard will be accessible by the IP addresses defined in the inbound rules.
+- You'll need to have a valid SSL certificate for ECS to query from DocumentDB. I put the `.pem` file in the `dashboard/` directory (sibling to the Dockerfile) and referenced its respective location in the Docker container when running `connect_to_mongo.py`
+- Data populates the dashboard by querying a MongoDB-compatible instance on DocumentDB. It isn't shown in the diagram, but DocumentDB requires you to deploy instances to multiple AZs.
+
+![AWS Chess Diagram](https://github.com/user-attachments/assets/1eff8b6d-80b2-48e4-b574-f7057ddc95a1)
+
